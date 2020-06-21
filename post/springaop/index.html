@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.69.2" />
+
+  <title>Spring AOP &middot; liam</title>
+
+  <meta name="description" content="" />
+
+  
+
+<meta itemprop="name" content="Spring AOP">
+<meta itemprop="description" content="第一章、AOP编程 1、AOP概念 AOP(Aspect Oriented Programing) 面向切面编程 = Spring 动态代理开发 以切面为基本单位的程序开发，通过切面间的彼此协同，完成程序的构建 切面 = 切入点 &#43; 额外功能 OOP(Object Oriented Programing) 面向对象编程 Java 以对象为基本单位的程序开发，通过对象的彼此协同，相互调用，完成程序的构建 POP(Producer Oriented Programing) 面向过程编程 C 以过程为基本单位的程序开发 AOP概念： 本质就是 Spring 的动态代理开发，通过代理类为原始类增加额外功能。 好处：利于原始类的维护 注意：AOP编程不可能取代OOP，OOP编程有意补充。 2、AOP编程的开发步骤 原始对象额外功能（MethodInterceptor）切入点组装切面（额外功能 &#43; 切入点）3、切面的名词解释 第二章、AOP的底层原理 1、核心问题 1、AOP如何创建动态代理类（动态字节码技术）2、Spring工厂如何加工创建代理对象通过原始对象的id值，获得的是代理对象2、动态代理类的创建 2.">
+<meta itemprop="datePublished" content="2020-05-10T12:46:01&#43;08:00" />
+<meta itemprop="dateModified" content="2020-05-10T12:46:01&#43;08:00" />
+<meta itemprop="wordCount" content="422">
+
+
+
+<meta itemprop="keywords" content="" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Spring AOP"/>
+<meta name="twitter:description" content="第一章、AOP编程 1、AOP概念 AOP(Aspect Oriented Programing) 面向切面编程 = Spring 动态代理开发 以切面为基本单位的程序开发，通过切面间的彼此协同，完成程序的构建 切面 = 切入点 &#43; 额外功能 OOP(Object Oriented Programing) 面向对象编程 Java 以对象为基本单位的程序开发，通过对象的彼此协同，相互调用，完成程序的构建 POP(Producer Oriented Programing) 面向过程编程 C 以过程为基本单位的程序开发 AOP概念： 本质就是 Spring 的动态代理开发，通过代理类为原始类增加额外功能。 好处：利于原始类的维护 注意：AOP编程不可能取代OOP，OOP编程有意补充。 2、AOP编程的开发步骤 原始对象额外功能（MethodInterceptor）切入点组装切面（额外功能 &#43; 切入点）3、切面的名词解释 第二章、AOP的底层原理 1、核心问题 1、AOP如何创建动态代理类（动态字节码技术）2、Spring工厂如何加工创建代理对象通过原始对象的id值，获得的是代理对象2、动态代理类的创建 2."/>
+
+
+<meta property="og:title" content="Spring AOP" />
+<meta property="og:description" content="第一章、AOP编程 1、AOP概念 AOP(Aspect Oriented Programing) 面向切面编程 = Spring 动态代理开发 以切面为基本单位的程序开发，通过切面间的彼此协同，完成程序的构建 切面 = 切入点 &#43; 额外功能 OOP(Object Oriented Programing) 面向对象编程 Java 以对象为基本单位的程序开发，通过对象的彼此协同，相互调用，完成程序的构建 POP(Producer Oriented Programing) 面向过程编程 C 以过程为基本单位的程序开发 AOP概念： 本质就是 Spring 的动态代理开发，通过代理类为原始类增加额外功能。 好处：利于原始类的维护 注意：AOP编程不可能取代OOP，OOP编程有意补充。 2、AOP编程的开发步骤 原始对象额外功能（MethodInterceptor）切入点组装切面（额外功能 &#43; 切入点）3、切面的名词解释 第二章、AOP的底层原理 1、核心问题 1、AOP如何创建动态代理类（动态字节码技术）2、Spring工厂如何加工创建代理对象通过原始对象的id值，获得的是代理对象2、动态代理类的创建 2." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liam12138.github.io/post/springaop/" />
+<meta property="article:published_time" content="2020-05-10T12:46:01+08:00" />
+<meta property="article:modified_time" content="2020-05-10T12:46:01+08:00" />
+
+
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/print.css"
+        media="print">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/poole.css">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/hyde.css">
+
+  
+
+
+  <link type="text/css" rel="stylesheet" href="/css/blog.css">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous" />
+
+  <link rel="apple-touch-icon-precomposed"
+        sizes="144x144"
+        href="/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  </head>
+<body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      
+        
+        <div class="author-image">
+          <img src="/images/head.jpg" class="img-circle img-headshot center" alt="Profile Picture">
+        </div>
+        
+      
+
+      <h1>liam</h1>
+
+      
+      <p class="lead">My Blog</p>
+      
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="https://liam12138.github.io/">Home</a>
+        </li>
+        <li>
+          <a href="/post/">Posts</a>
+        </li><li>
+          <a href="/about/about-me">About</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="social-icons">
+      
+      <a href="https://github.com/liam12138" rel="me" title="GitHub" target="_blank">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      
+    </section>
+  </div>
+</aside>
+
+
+  <main class="content container">
+  <div class="post">
+  <h1>Spring AOP</h1>
+
+  <div class="post-date">
+    <time datetime="2020-05-10T12:46:01&#43;0800">May 10, 2020</time> &middot; 2 min read
+  </div>
+
+  <h1 id="第一章aop编程">第一章、AOP编程</h1>
+<h2 id="1aop概念">1、AOP概念</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">AOP(Aspect Oriented Programing) 面向切面编程 = Spring 动态代理开发
+	以切面为基本单位的程序开发，通过切面间的彼此协同，完成程序的构建
+	切面 = 切入点 + 额外功能
+OOP(Object Oriented Programing) 面向对象编程 Java
+	以对象为基本单位的程序开发，通过对象的彼此协同，相互调用，完成程序的构建
+POP(Producer Oriented Programing) 面向过程编程 C
+	以过程为基本单位的程序开发
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">AOP概念：
+	本质就是 Spring 的动态代理开发，通过代理类为原始类增加额外功能。
+	好处：利于原始类的维护
+注意：AOP编程不可能取代OOP，OOP编程有意补充。
+</code></pre></div><h2 id="2aop编程的开发步骤">2、AOP编程的开发步骤</h2>
+<pre><code class="language-mark" data-lang="mark">原始对象
+额外功能（MethodInterceptor）
+切入点
+组装切面（额外功能 + 切入点）
+</code></pre><h2 id="3切面的名词解释">3、切面的名词解释</h2>
+<p><img src="../images/image-20200528172401521.png" alt="image-20200528172401521"></p>
+<h1 id="第二章aop的底层原理">第二章、AOP的底层原理</h1>
+<h2 id="1核心问题">1、核心问题</h2>
+<pre><code class="language-mark" data-lang="mark">1、AOP如何创建动态代理类（动态字节码技术）
+2、Spring工厂如何加工创建代理对象
+	通过原始对象的id值，获得的是代理对象
+</code></pre><h2 id="2动态代理类的创建">2、动态代理类的创建</h2>
+<h3 id="21jvm-创建动态代理的原理">2.1、JVM 创建动态代理的原理</h3>
+<ul>
+<li>Proxy.newProxyInstance 方法参数详解</li>
+</ul>
+<p><img src="../images/image-20200529085639835.png" alt="image-20200529085639835"></p>
+<p><img src="../images/image-20200529085748274.png" alt="image-20200529085748274"></p>
+<ul>
+<li>
+<p>编码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        UserService userService <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> UserServiceImpl<span style="color:#f92672">();</span>
+  
+        InvocationHandler handler <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>proxy<span style="color:#f92672">,</span> method<span style="color:#f92672">,</span> objects<span style="color:#f92672">)-&gt;{</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;---------- proxy jdk log ---------&#34;</span><span style="color:#f92672">);</span>
+            Object ret <span style="color:#f92672">=</span> method<span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span>userService<span style="color:#f92672">,</span> objects<span style="color:#f92672">);</span>
+            <span style="color:#66d9ef">return</span> ret<span style="color:#f92672">;</span>
+        <span style="color:#f92672">};</span>
+  
+        UserService userServiceProxy <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>UserService<span style="color:#f92672">)</span> Proxy<span style="color:#f92672">.</span><span style="color:#a6e22e">newProxyInstance</span><span style="color:#f92672">(</span>
+                UserServiceImpl<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getClassLoader</span><span style="color:#f92672">(),</span>
+                userService<span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getInterfaces</span><span style="color:#f92672">(),</span> handler<span style="color:#f92672">);</span>
+  
+        userServiceProxy<span style="color:#f92672">.</span><span style="color:#a6e22e">login</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;liam&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;11111&#34;</span><span style="color:#f92672">);</span>
+        userServiceProxy<span style="color:#f92672">.</span><span style="color:#a6e22e">register</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> User<span style="color:#f92672">());</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div></li>
+</ul>
+<h3 id="22cglib-创建动态代理的原理">2.2、CGlib 创建动态代理的原理</h3>
+<pre><code class="language-mark" data-lang="mark">原理：父子继承关系创建代理对象，原始类作为父类，代理类作为子类，这样既可以保证二者方法一致，同时在代理类中提供新的实现（额外功能 + 原始方法）。
+</code></pre><p><img src="../images/image-20200528192839768.png" alt=""></p>
+<p>代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        UserService userService <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> UserService<span style="color:#f92672">();</span>
+
+        Enhancer enhancer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Enhancer<span style="color:#f92672">();</span>
+
+        enhancer<span style="color:#f92672">.</span><span style="color:#a6e22e">setClassLoader</span><span style="color:#f92672">(</span>TestCglib<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getClassLoader</span><span style="color:#f92672">());</span>
+        enhancer<span style="color:#f92672">.</span><span style="color:#a6e22e">setSuperclass</span><span style="color:#f92672">(</span>userService<span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">());</span>
+
+        MethodInterceptor methodInterceptor <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>o<span style="color:#f92672">,</span> method<span style="color:#f92672">,</span> objects<span style="color:#f92672">,</span> methodProxy<span style="color:#f92672">)</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;------------ Cglib Log ---------&#34;</span><span style="color:#f92672">);</span>
+
+            Object ret <span style="color:#f92672">=</span> method<span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span>userService<span style="color:#f92672">,</span> objects<span style="color:#f92672">);</span>
+            <span style="color:#66d9ef">return</span> ret<span style="color:#f92672">;</span>
+        <span style="color:#f92672">};</span>
+        enhancer<span style="color:#f92672">.</span><span style="color:#a6e22e">setCallback</span><span style="color:#f92672">(</span>methodInterceptor<span style="color:#f92672">);</span>
+
+        UserService userServiceProxy <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>UserService<span style="color:#f92672">)</span> enhancer<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">();</span>
+
+        userServiceProxy<span style="color:#f92672">.</span><span style="color:#a6e22e">login</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;liam&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;123456&#34;</span><span style="color:#f92672">);</span>
+        userServiceProxy<span style="color:#f92672">.</span><span style="color:#a6e22e">register</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> User<span style="color:#f92672">());</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><ul>
+<li>
+<p>总结</p>
+<pre><code class="language-mark" data-lang="mark">JDK 动态代理 Proxy.newProxyInstance() 通过接口创建代理的实现类
+Cglib 动态代理 Enhancer     		  通过继承父类创建的代理类
+</code></pre></li>
+</ul>
+<h3 id="23spring工厂如何加工原始对象">2.3、Spring工厂如何加工原始对象</h3>
+<ul>
+<li>思路分析</li>
+</ul>
+<p><img src="../images/image-20200528195802178.png" alt="image-20200528195802178"></p>
+<ul>
+<li>
+<p>编码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ProxyBeanPostProcessor</span> <span style="color:#66d9ef">implements</span> BeanPostProcessor <span style="color:#f92672">{</span>
+  
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> Object <span style="color:#a6e22e">postProcessBeforeInitialization</span><span style="color:#f92672">(</span>Object bean<span style="color:#f92672">,</span> String beanName<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> BeansException <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> bean<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+  
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> Object <span style="color:#a6e22e">postProcessAfterInitialization</span><span style="color:#f92672">(</span>Object bean<span style="color:#f92672">,</span> String beanName<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> BeansException <span style="color:#f92672">{</span>
+  
+        InvocationHandler handler <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>proxy<span style="color:#f92672">,</span> method<span style="color:#f92672">,</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34; --------- proxy log --------&#34;</span><span style="color:#f92672">);</span>
+            Object ret <span style="color:#f92672">=</span> method<span style="color:#f92672">.</span><span style="color:#a6e22e">invoke</span><span style="color:#f92672">(</span>bean<span style="color:#f92672">,</span> args<span style="color:#f92672">);</span>
+  
+            <span style="color:#66d9ef">return</span> ret<span style="color:#f92672">;</span>
+        <span style="color:#f92672">};</span>
+  
+  
+        <span style="color:#66d9ef">return</span> Proxy<span style="color:#f92672">.</span><span style="color:#a6e22e">newProxyInstance</span><span style="color:#f92672">(</span>
+                ProxyBeanPostProcessor<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getClassLoader</span><span style="color:#f92672">(),</span>
+                bean<span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getInterfaces</span><span style="color:#f92672">(),</span>
+                handler
+        <span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;bean</span> <span style="color:#a6e22e">id=</span><span style="color:#e6db74">&#34;userService&#34;</span> <span style="color:#a6e22e">class=</span><span style="color:#e6db74">&#34;com.liam.service.impl.UserServiceImpl&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#75715e">&lt;!--
+</span><span style="color:#75715e">实现 BeanPostProcessor 进行加工
+</span><span style="color:#75715e">配置文件中对 BeanPostProxy 进行配置
+</span><span style="color:#75715e">--&gt;</span>
+<span style="color:#f92672">&lt;bean</span> <span style="color:#a6e22e">id=</span><span style="color:#e6db74">&#34;proxyBeanPostProcessor&#34;</span> <span style="color:#a6e22e">class=</span><span style="color:#e6db74">&#34;com.liam.jdk.ProxyBeanPostProcessor&#34;</span><span style="color:#f92672">/&gt;</span>
+</code></pre></div></li>
+</ul>
+<h1 id="第三章基于注解的aop编程">第三章、基于注解的AOP编程</h1>
+<h2 id="1基于注解的aop编程的开发步骤">1、基于注解的AOP编程的开发步骤</h2>
+<ol>
+<li>原始对象</li>
+<li>额外功能</li>
+<li>切入点</li>
+<li>组装切面</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Aspect</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyAspect</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#a6e22e">@Around</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;execution(* login(..))&#34;</span><span style="color:#f92672">)</span>
+    <span style="color:#66d9ef">public</span> Object <span style="color:#a6e22e">around</span><span style="color:#f92672">(</span>ProceedingJoinPoint joinPoint<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Throwable <span style="color:#f92672">{</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34; -------- aspect log -----&#34;</span><span style="color:#f92672">);</span>
+        Object ret <span style="color:#f92672">=</span> joinPoint<span style="color:#f92672">.</span><span style="color:#a6e22e">proceed</span><span style="color:#f92672">();</span>
+
+        <span style="color:#66d9ef">return</span> ret<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">1、额外功能
+2、切入点
+3、组装切面
+<span style="color:#f92672">&lt;bean</span> <span style="color:#a6e22e">id=</span><span style="color:#e6db74">&#34;around&#34;</span> <span style="color:#a6e22e">class=</span><span style="color:#e6db74">&#34;com.liam.aspect.MyAspect&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#75715e">&lt;!--告知 Spring 基于注解进行AOP编程--&gt;</span>
+<span style="color:#f92672">&lt;aop:aspectj-autoproxy/&gt;</span>
+</code></pre></div><h2 id="2细节">2、细节</h2>
+<ol>
+<li>
+<p>切入点复用</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">在切面类中定义一个函数 <span style="color:#a6e22e">@PointCut</span> 注解 通过这种方式<span style="color:#960050;background-color:#1e0010">，</span>定义切入点表达式<span style="color:#960050;background-color:#1e0010">，</span>后续更加有利于切入点复用
+<span style="color:#a6e22e">@Aspect</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyAspect</span> <span style="color:#f92672">{</span>
+   
+    <span style="color:#a6e22e">@Pointcut</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;execution(* login(..))&#34;</span><span style="color:#f92672">)</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">myPoint</span><span style="color:#f92672">()</span> <span style="color:#f92672">{}</span>
+   
+    <span style="color:#a6e22e">@Around</span><span style="color:#f92672">(</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;myPoint()&#34;</span><span style="color:#f92672">)</span>
+    <span style="color:#66d9ef">public</span> Object <span style="color:#a6e22e">around</span><span style="color:#f92672">(</span>ProceedingJoinPoint joinPoint<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Throwable <span style="color:#f92672">{</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34; -------- aspect log -----&#34;</span><span style="color:#f92672">);</span>
+        Object ret <span style="color:#f92672">=</span> joinPoint<span style="color:#f92672">.</span><span style="color:#a6e22e">proceed</span><span style="color:#f92672">();</span>
+   
+        <span style="color:#66d9ef">return</span> ret<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+   
+    <span style="color:#a6e22e">@Around</span><span style="color:#f92672">(</span>value <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;myPoint()&#34;</span><span style="color:#f92672">)</span>
+    <span style="color:#66d9ef">public</span> Object <span style="color:#a6e22e">around1</span><span style="color:#f92672">(</span>ProceedingJoinPoint joinPoint<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> Throwable <span style="color:#f92672">{</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34; -------- aspect liam -----&#34;</span><span style="color:#f92672">);</span>
+        Object ret <span style="color:#f92672">=</span> joinPoint<span style="color:#f92672">.</span><span style="color:#a6e22e">proceed</span><span style="color:#f92672">();</span>
+   
+        <span style="color:#66d9ef">return</span> ret<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div></li>
+<li>
+<p>动态代理的创建方式</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">AOP底层实现 2种代理创建方式
+1.JDK 动态代理 Proxy.newProxyInstance() 通过接口创建代理的实现类
+2.Cglib 动态代理 Enhancer     		  通过继承父类创建的代理类
+       
+默认情况 AOP编程 底层应用JDK动态代理创建方式
+    如果切换为Cglib
+    1、基于注解AOP开发
+<span style="color:#f92672">&lt;aop:aspectj-autoproxy</span> <span style="color:#a6e22e">proxy-target-class=</span><span style="color:#e6db74">&#34;true&#34;</span><span style="color:#f92672">/&gt;</span>
+ 2、传统AOP开发
+<span style="color:#f92672">&lt;aop:config</span> <span style="color:#a6e22e">proxy-target-class=</span><span style="color:#e6db74">&#34;true&#34;</span><span style="color:#f92672">&gt;&lt;/aop&gt;</span>
+   
+</code></pre></div></li>
+</ol>
+<h1 id="第四章aop开发中的一个坑">第四章、AOP开发中的一个坑</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/*
+</span><span style="color:#75715e">在同一个业务中，进行业务方法间的相互调用，只有最外层的方法，才是加入了额外功能(内部的方法，通过普通的方式调用，都调用的是原始方法)。如果想让内层的方法也调用代理对象的办法，就要 ApplicationContextAware 获得工厂，进而获得代理对象。
+</span><span style="color:#75715e">*/</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserServiceImpl</span> <span style="color:#66d9ef">implements</span> UserService<span style="color:#f92672">,</span> ApplicationContextAware <span style="color:#f92672">{</span>
+
+    <span style="color:#66d9ef">private</span> ApplicationContext ctx<span style="color:#f92672">;</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">login</span><span style="color:#f92672">(</span>String name<span style="color:#f92672">,</span> String password<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;UserServiceIm register 业务运算 DAO &#34;</span><span style="color:#f92672">);</span>
+        UserService userService <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>UserService<span style="color:#f92672">)</span> ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">getBean</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;userService&#34;</span><span style="color:#f92672">);</span>
+        userService<span style="color:#f92672">.</span><span style="color:#a6e22e">register</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> User<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;liam&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;abc@123&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;abc@123.com&#34;</span><span style="color:#f92672">));</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">register</span><span style="color:#f92672">(</span>User user<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>user<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setApplicationContext</span><span style="color:#f92672">(</span>ApplicationContext applicationContext<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> BeansException <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">ctx</span> <span style="color:#f92672">=</span> applicationContext<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h1 id="第五章aop阶段知识总结">第五章、AOP阶段知识总结</h1>
+<p><img src="../images/image-20200529103848480.png" alt="image-20200529103848480"></p>
+
+</div>
+
+
+  </main>
+
+  <footer>
+  <div>
+    &copy; liam 2020
+
+    &middot; <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>
+
+    
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"
+          integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0="
+          crossorigin="anonymous"></script>
+
+  <script src="/js/blog.js"></script>
+
+  
+</body>
+</html>

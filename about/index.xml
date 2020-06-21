@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Abouts on liam</title>
+    <link>https://liam12138.github.io/about/</link>
+    <description>Recent content in Abouts on liam</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Mon, 20 Apr 2020 18:46:01 +0800</lastBuildDate>
+    
+	<atom:link href="https://liam12138.github.io/about/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title></title>
+      <link>https://liam12138.github.io/about/about-me/</link>
+      <pubDate>Mon, 20 Apr 2020 18:46:01 +0800</pubDate>
+      
+      <guid>https://liam12138.github.io/about/about-me/</guid>
+      <description>个人信息  liam/男/1999 本科 期望职位：大数据开发工程师 证书：阿里云ACA认证（Big Data）  联系方式  Email：liam98908@163.</description>
+    </item>
+    
+  </channel>
+</rss>
