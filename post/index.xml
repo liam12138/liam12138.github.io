@@ -6,10 +6,28 @@
     <description>Recent content in Posts on liam</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 10 May 2020 12:46:01 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 01 Jun 2020 11:46:01 +0800</lastBuildDate>
     
 	<atom:link href="https://liam98908.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Spring 持久层</title>
+      <link>https://liam98908.github.io/post/spring-%E6%8C%81%E4%B9%85%E5%B1%82/</link>
+      <pubDate>Mon, 01 Jun 2020 11:46:01 +0800</pubDate>
+      
+      <guid>https://liam98908.github.io/post/spring-%E6%8C%81%E4%B9%85%E5%B1%82/</guid>
+      <description>第一章、持久层整合 1、Spring 框架为什么要与持久层技术整合 1、JavaEE 开发需要持久层进行数据库的访问操作； 2、JDBC Hibernate MyBatis 进行持久开发过程存在大量的代码冗余； 3、Spring 基于模板设计模式对于上述的持久层技术进行了封装。 2、Spring 可以与哪些持久层技术整合 1、JDBC JDBCTemplate 2、Hibern （JPA） HibernateTemplate 3、MyBatis SQLSessionFactoryBean MapperScannerConfigure 第二章、Spring 与 MyBatis 整合 1、MyBatis 开发步骤的回顾 1、实体 2、实体别名 3、表 4、创建 DAO 接口 5、实现 Mapper 文件 6、注册 Mapper 文件 7、MybatisAPI 调用 2、MyBatis 在开发中的问题 1、开发繁琐 2、代码冗余 3、Spring 与 MyBatis 的整合 4、Spring 与 MyBatis 整合的开发步骤   搭建开发环境（jar）</description>
+    </item>
+    
+    <item>
+      <title>Spring 注解</title>
+      <link>https://liam98908.github.io/post/spring-%E6%B3%A8%E8%A7%A3/</link>
+      <pubDate>Mon, 01 Jun 2020 11:46:01 +0800</pubDate>
+      
+      <guid>https://liam98908.github.io/post/spring-%E6%B3%A8%E8%A7%A3/</guid>
+      <description>第一章、注解基础概念 1. 什么是注解编程 在类或者方法上加入特定的注解(@XXX)，完成特定功能的开发 @Component public class XXX() 2. 为什么要讲注解编程 1.</description>
+    </item>
     
     <item>
       <title>Spring AOP</title>
@@ -32,24 +50,6 @@
 缺点
 不适合低延时访问、无法对大量 的小文件进行存储、不支持并发写和修改。
 组成架构</description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>https://liam98908.github.io/post/spring-%E6%8C%81%E4%B9%85%E5%B1%82/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://liam98908.github.io/post/spring-%E6%8C%81%E4%B9%85%E5%B1%82/</guid>
-      <description>第一章、持久层整合 1、Spring 框架为什么要与持久层技术整合 1、JavaEE 开发需要持久层进行数据库的访问操作； 2、JDBC Hibernate MyBatis 进行持久开发过程存在大量的代码冗余； 3、Spring 基于模板设计模式对于上述的持久层技术进行了封装。 2、Spring 可以与哪些持久层技术整合 1、JDBC JDBCTemplate 2、Hibern （JPA） HibernateTemplate 3、MyBatis SQLSessionFactoryBean MapperScannerConfigure 第二章、Spring 与 MyBatis 整合 1、MyBatis 开发步骤的回顾 1、实体 2、实体别名 3、表 4、创建 DAO 接口 5、实现 Mapper 文件 6、注册 Mapper 文件 7、MybatisAPI 调用 2、MyBatis 在开发中的问题 1、开发繁琐 2、代码冗余 3、Spring 与 MyBatis 的整合 4、Spring 与 MyBatis 整合的开发步骤   搭建开发环境（jar）</description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>https://liam98908.github.io/post/spring-%E6%B3%A8%E8%A7%A3/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://liam98908.github.io/post/spring-%E6%B3%A8%E8%A7%A3/</guid>
-      <description>第一章、注解基础概念 1. 什么是注解编程 在类或者方法上加入特定的注解(@XXX)，完成特定功能的开发 @Component public class XXX() 2. 为什么要讲注解编程 1.</description>
     </item>
     
   </channel>
