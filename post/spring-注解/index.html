@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.69.2" />
+
+  <title> &middot; liam</title>
+
+  <meta name="description" content="" />
+
+  
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="第一章、注解基础概念 1. 什么是注解编程 在类或者方法上加入特定的注解(@XXX)，完成特定功能的开发 @Component public class XXX() 2. 为什么要讲注解编程 1.">
+
+<meta itemprop="wordCount" content="420">
+
+
+
+<meta itemprop="keywords" content="" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="第一章、注解基础概念 1. 什么是注解编程 在类或者方法上加入特定的注解(@XXX)，完成特定功能的开发 @Component public class XXX() 2. 为什么要讲注解编程 1."/>
+
+
+<meta property="og:title" content="" />
+<meta property="og:description" content="第一章、注解基础概念 1. 什么是注解编程 在类或者方法上加入特定的注解(@XXX)，完成特定功能的开发 @Component public class XXX() 2. 为什么要讲注解编程 1." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liam98908.github.io/post/spring-%E6%B3%A8%E8%A7%A3/" />
+
+
+
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/print.css"
+        media="print">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/poole.css">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/hyde.css">
+
+  
+
+
+  <link type="text/css" rel="stylesheet" href="/css/blog.css">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous" />
+
+  <link rel="apple-touch-icon-precomposed"
+        sizes="144x144"
+        href="/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  </head>
+<body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      
+        
+        <div class="author-image">
+          <img src="/images/head.jpg" class="img-circle img-headshot center" alt="Profile Picture">
+        </div>
+        
+      
+
+      <h1>liam</h1>
+
+      
+      <p class="lead">My Blog</p>
+      
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="https://liam98908.github.io">Home</a>
+        </li>
+        <li>
+          <a href="/post/">Posts</a>
+        </li><li>
+          <a href="/about/about-me">About</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="social-icons">
+      
+      <a href="https://github.com/liam12138" rel="me" title="GitHub" target="_blank">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      
+    </section>
+  </div>
+</aside>
+
+
+  <main class="content container">
+  <div class="post">
+  <h1></h1>
+
+  <div class="post-date">
+    <time datetime="0001-01-01T00:00:00Z">Jan 1, 0001</time> &middot; 2 min read
+  </div>
+
+  <h2 id="第一章注解基础概念">第一章、注解基础概念</h2>
+<h3 id="1-什么是注解编程">1. 什么是注解编程</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">在类或者方法上加入特定的注解<span style="color:#f92672">(</span><span style="color:#a6e22e">@XXX</span><span style="color:#f92672">)</span><span style="color:#960050;background-color:#1e0010">，</span>完成特定功能的开发
+
+<span style="color:#a6e22e">@Component</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">XXX</span><span style="color:#f92672">()</span>
+</code></pre></div><h3 id="2-为什么要讲注解编程">2. 为什么要讲注解编程</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown"><span style="color:#66d9ef">1.</span> 注解开发方便
+	代码简洁 开发速度大大提高
+<span style="color:#66d9ef">2.</span> Spring 开发潮流
+	Spring2.X引入注解 Spring3.X完善注解 SpringBoot的推广
+</code></pre></div><h3 id="3-注解的作用">3. 注解的作用</h3>
+<ul>
+<li>替换 XML 这种配置形式，简化配置</li>
+</ul>
+<p><img src="../images/image-20200606235248677.png" alt="image-20200606235248677"></p>
+<ul>
+<li>
+<p>替换接口，实现调用双方的契约性</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">通过注解的方式，在功能调用者和功能提供者之间打成约定，进而进行功能的调用。因为注解应用更为方便灵活，所以现在的开发中，更推荐注解的形式完成。
+</code></pre></div></li>
+</ul>
+<p><img src="../images/image-20200607000144174.png" alt="image-20200607000144174"></p>
+<h3 id="4-spring-注解的发展历程">4. Spring 注解的发展历程</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown"><span style="color:#66d9ef">1.</span> Spring2.X 开始注重注解编程 @Component @Service @Scope...
+	目的：提供这些注解只是为了在某些情况下简化 XML 的配置，作为 XML 开发的有益补充
+<span style="color:#66d9ef">2.</span> Spring3.X @Configuration @Bean
+	目的：彻底替换 XML，基于纯注解编程
+<span style="color:#66d9ef">3.</span> Spring4.X SpringBoot
+	提倡使用注解常见开发
+</code></pre></div><h3 id="5-spring-注解开发的一个问题">5. Spring 注解开发的一个问题</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">Spring 基于注解进行配置后，还能否解耦合
+在 Spring 框架应用注解时，如果对注解配置的内容不满意，可以通过 Spring 配置文件进行覆盖
+</code></pre></div><h2 id="第二章-spring-的基础注解spring2x">第二章 、Spring 的基础注解(Spring2.X)</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">这个阶段的注解，仅仅是简化 XML 的配置，并不能完全替代 XML
+</code></pre></div><h3 id="1-对象创建的相关注解">1. 对象创建的相关注解</h3>
+<ul>
+<li>
+<p>搭建开发环境</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;context:component-scan</span> <span style="color:#a6e22e">base-package=</span><span style="color:#e6db74">&#34;com.liam&#34;</span><span style="color:#f92672">/&gt;</span>
+作用：让 Spring 框架在设置包及其子包中扫描对应的注解，使其生效。
+</code></pre></div></li>
+<li>
+<p>对象创建相关注解</p>
+<ul>
+<li>
+<p>@Component</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">作用：替换原有 Spring 配置文件中的 &lt;<span style="color:#f92672">bean</span>&gt; 标签
+注意：
+    id 属性 component 注解 提供了默认的设置方式 首单词首字母小写
+    class 属性 通过反射获得 class 内容
+</code></pre></div></li>
+</ul>
+<p><img src="../images/image-20200607092451738.png" alt="image-20200607092451738"></p>
+<ul>
+<li>
+<p>@Component 细节</p>
+<ul>
+<li>
+<p>如何显示指定工厂创建对象id的值</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">@Component(&#34;u&#34;)
+</code></pre></div></li>
+<li>
+<p>Spring 的配置文件覆盖注解配置内容</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">applicationContext.xml
+<span style="color:#f92672">&lt;bean</span> <span style="color:#a6e22e">id=</span><span style="color:#e6db74">&#34;u&#34;</span> <span style="color:#a6e22e">class=</span><span style="color:#e6db74">&#34;com.liam.annotation.bean.User&#34;</span><span style="color:#f92672">/&gt;</span>
+id 值 class 的值 要和 注解中的设置保持一致
+</code></pre></div></li>
+</ul>
+</li>
+<li>
+<p>@Component的衍生注解</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">@Repository --&gt; XXXDAO
+public class UserDao{}
+@Service
+public class UserService{}
+@Controller
+public class RegAction{}
+注意：本质上这些衍生注解就是@Component
+     作用 &lt;<span style="color:#f92672">bean</span>&gt;
+     细节 @Service(&#34;s&#34;)
+目的：更加准确的表达一个类型的作用
+注意：Spring 整合 Mybatis 开发过程中 不适用@Repository @Component
+</code></pre></div></li>
+</ul>
+</li>
+<li>
+<p>@Scope 注解</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">作用：控制简单对象创建次数
+注意：不添加 @Scope Spring提供默认值 singleton
+&lt;<span style="color:#f92672">bean</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span> <span style="color:#a6e22e">scope</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;singleton | prototype&#34;</span>/&gt;
+</code></pre></div></li>
+<li>
+<p>@Lazy注解</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">作用：延迟创建单实例对象
+注意：一旦使用了 @Lazy 注解后，Spring 会在使用这个对象的时候，进行该对象的创建
+&lt;<span style="color:#f92672">bean</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span> <span style="color:#a6e22e">lazy</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;false&#34;</span>/&gt;
+</code></pre></div></li>
+<li>
+<p>生命周期方法相关注解</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown"><span style="color:#66d9ef">1.</span> 初始化相关方法 @PostConstruct
+  InitializingBean
+  &lt;<span style="color:#f92672">bean</span> <span style="color:#a6e22e">init-method</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>/&gt;
+<span style="color:#66d9ef">2.</span> 销毁方法 @PreDestroy
+  DisposableBean
+  &lt;<span style="color:#f92672">bean</span> <span style="color:#a6e22e">destory-method</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>/&gt;
+注意：
+  <span style="color:#66d9ef">1.</span> 上述的2个注解并不是 Spring 提供的，JSR(JavaEE规范)
+  <span style="color:#66d9ef">2.</span> 再一次的验证，通过注解实现了接口的契约性
+</code></pre></div></li>
+</ul>
+<h3 id="2-注入相关注解">2. 注入相关注解</h3>
+<ul>
+<li>
+<p>用户自定义类型 @Autowired</p>
+<p><img src="../images/image-20200607104243929.png" alt="image-20200607104243929"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">@Autowired细节
+<span style="color:#66d9ef">1.</span> Autowired 注解基于类型进行注入 [推荐]
+  基于类型的注入：注入对象的类型，必须与目标成员变量类型相同或者是其子类(实现类)
+<span style="color:#66d9ef">2.</span> Autowired Qualifier 基于名字进行注入 [了解]
+  基于名字的注入：注入对象的 id 值，必须与 Qualifier 注解中设置的名字相同
+<span style="color:#66d9ef">3.</span> Autowired 注解放置位置
+  a) 放置在对应成员变量的set方法上
+  b)  直接把这个注解放置在成员变量上，Spring 通过反射直接对成员变量进行注入 (赋值) [推荐]
+<span style="color:#66d9ef">4.</span> JavaEE 规范中类似功能的注解
+  JSR250 @Resource(name = &#34;userDAOImpl&#34;) 基于名字注入
+      @Autowired()
+      @Qualifier(&#34;userDAOImpl&#34;)
+      注意：如果在应用 Resource 注解时，名字没有配对成功，那么他会继续按照类型进行注入
+  JSR330 @Inject 作用于 @Autowired 完全一致 基于类型进行注入 --&gt; EJB3.0
+      需要导入 jar 依赖
+</code></pre></div></li>
+<li>
+<p>JDK 类型</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml">@Value 注解完成
+1. 设置 xxx.properties
+  id = 10
+  name = liam
+2. Spring 的工厂读取这个配置文件
+  <span style="color:#f92672">&lt;context:property-placeholder</span> <span style="color:#a6e22e">local=</span><span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">/&gt;</span>
+3. 代码
+  属性 @Value(&#34;${key}&#34;)
+</code></pre></div><ul>
+<li>
+<p>@PropertySource</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown"><span style="color:#66d9ef">1.</span> 作用：替换 Spring 配置文件中的 &lt;<span style="color:#f92672">context:property-placeholder</span> <span style="color:#a6e22e">local</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span> /&gt; 标签
+<span style="color:#66d9ef">2.</span> 开发步骤
+    <span style="color:#66d9ef">1.</span> 设置 xxx.properties
+        id = 10 
+        name = liam
+    <span style="color:#66d9ef">2.</span> 应用 @PropertySource
+    <span style="color:#66d9ef">3.</span> 代码
+        属性 @Value()
+</code></pre></div></li>
+<li>
+<p>@Value 注解使用细节</p>
+<ul>
+<li>
+<p>@Value 注解不能应用在静态成员变量上</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">如果应用，赋值（注入）失败
+</code></pre></div></li>
+<li>
+<p>@Value 注解 + Properties 这种方式，不能注入集合类型</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">Spring 提供新的配置形式 YAML YML (SpringBoot)
+</code></pre></div></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="3注解扫描详解">3.注解扫描详解</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">&lt;<span style="color:#f92672">context:component-scan</span> <span style="color:#a6e22e">base-package</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.liam&#34;</span>/&gt;
+当前包 及其 子包
+</code></pre></div><ol>
+<li>
+<p>排除方式</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;context:component-scan</span> <span style="color:#a6e22e">base-package=</span><span style="color:#e6db74">&#34;com.liam&#34;</span><span style="color:#f92672">&gt;</span>
+ <span style="color:#f92672">&lt;context:exclude-fliter</span> <span style="color:#a6e22e">type=</span><span style="color:#e6db74">&#34;&#34;</span> <span style="color:#a6e22e">expression=</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">/&gt;</span>
+ type:assignable: 排除特定的类型 不进行扫描
+ aspectj:切入点表达式
+         包切入点：com.liam.bean..*
+         类切入点：*..User
+ regex:正则表达式
+ custom:自定义排除策略框架底层开发(基本不用)
+<span style="color:#f92672">&lt;/context:component-scan&gt;</span>
+   
+排除策略可以叠加使用
+<span style="color:#f92672">&lt;context:component-scan</span> <span style="color:#a6e22e">base-package=</span><span style="color:#e6db74">&#34;com.liam&#34;</span><span style="color:#f92672">&gt;</span>
+ <span style="color:#f92672">&lt;context:exclude-filter</span> <span style="color:#a6e22e">type=</span><span style="color:#e6db74">&#34;assignable&#34;</span> <span style="color:#a6e22e">expression=</span><span style="color:#e6db74">&#34;com.liam.bean.User&#34;</span> <span style="color:#f92672">/&gt;</span>
+ <span style="color:#f92672">&lt;context:exclude-filter</span> <span style="color:#a6e22e">type=</span><span style="color:#e6db74">&#34;aspectj&#34;</span> <span style="color:#a6e22e">expression=</span><span style="color:#e6db74">&#34;com.liam.injection..*&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;/context:component-scan&gt;</span>
+</code></pre></div></li>
+<li>
+<p>包含方式</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;context:compinent-scan</span> <span style="color:#a6e22e">base-package=</span><span style="color:#e6db74">&#34;com.liam&#34;</span> <span style="color:#a6e22e">use-default-filters=</span><span style="color:#e6db74">&#34;false&#34;</span><span style="color:#f92672">&gt;</span>
+ <span style="color:#f92672">&lt;context:include-filter</span> <span style="color:#a6e22e">type=</span><span style="color:#e6db74">&#34;&#34;</span> <span style="color:#a6e22e">expression=</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;/context:compinent-scan&gt;</span>
+   
+1. use-default-filters=&#34;flase&#34;
+ 作用：让 Spring 默认的注解扫描方式失效
+2. <span style="color:#f92672">&lt;context:include-filter</span> <span style="color:#a6e22e">type=</span><span style="color:#e6db74">&#34;&#34;</span> <span style="color:#a6e22e">expression=</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">/&gt;</span>
+ 作用：指定扫描哪些注解
+ type:assignable:排除特定的类型 不进行扫描
+      annotation:排除特定的注解 不进行扫描
+      aspectj:切入点表达式
+              包切入点：com.liam.bean..*
+              类切入点：*..User
+      regex:正则表达式
+      custom:自定义策略框架底层开发
+包含的方式支持叠加
+<span style="color:#f92672">&lt;context:component-scan</span> <span style="color:#a6e22e">base-package=</span><span style="color:#e6db74">&#34;com.liam&#34;</span> <span style="color:#a6e22e">use-default-filters=</span><span style="color:#e6db74">&#34;false&#34;</span><span style="color:#f92672">&gt;</span>
+ <span style="color:#f92672">&lt;context:include-filter</span> <span style="color:#a6e22e">type=</span><span style="color:#e6db74">&#34;annotation&#34;</span> <span style="color:#a6e22e">expression=</span><span style="color:#e6db74">&#34;org.springframework.stereotype.Repository&#34;</span><span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;context:include-filter</span> <span style="color:#a6e22e">type=</span><span style="color:#e6db74">&#34;annotation&#34;</span> <span style="color:#a6e22e">expression=</span><span style="color:#e6db74">&#34;org.springframework.stereotype.Service&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;/context:component-scan&gt;</span>
+</code></pre></div></li>
+<li>
+<p>对于注解开发的思考</p>
+<p><strong>配置互通</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Spring 注解配置 配置文件的配置 互通
+<span style="color:#a6e22e">@Repository</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserDaoImpl</span><span style="color:#f92672">(){}</span>
+   
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UserServiceImpl</span> <span style="color:#f92672">{</span>
+ <span style="color:#66d9ef">private</span> UserDao userDao<span style="color:#f92672">;</span>
+    set get<span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+   
+<span style="color:#f92672">&lt;</span>bean id<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;userService&#34;</span> class<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;com.liam.UserServiceImpl&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;</span>property name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;userDao&#34;</span> ref<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;userDaoImpl&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;/</span>bean<span style="color:#f92672">&gt;</span>
+</code></pre></div><p><strong>什么情况下使用注解，什么情况下使用配置文件？</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">@Component 替换 &lt;<span style="color:#f92672">bean</span>&gt;
+基础注解 (@Component @Autowried @Value) 程序员开发类型的配置
+<span style="color:#66d9ef">1.</span> 在程序员开发的类型上 可以加入对应注解 进行对象的创建
+ User UserService UserDao UserAction
+<span style="color:#66d9ef">2.</span> 应用其他非程序员开发的类型时，还需要使用 &lt;<span style="color:#f92672">bean</span>&gt; 进行配置的
+ SqlSessionFactoryBean MapperScannerConfigure
+</code></pre></div></li>
+</ol>
+
+</div>
+
+
+  </main>
+
+  <footer>
+  <div>
+    &copy; liam 2020
+
+    &middot; <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>
+
+    
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"
+          integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0="
+          crossorigin="anonymous"></script>
+
+  <script src="/js/blog.js"></script>
+
+  
+</body>
+</html>

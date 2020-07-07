@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.69.2" />
+
+  <title> &middot; liam</title>
+
+  <meta name="description" content="" />
+
+  
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="第一章、持久层整合 1、Spring 框架为什么要与持久层技术整合 1、JavaEE 开发需要持久层进行数据库的访问操作； 2、JDBC Hibernate MyBatis 进行持久开发过程存在大量的代码冗余； 3、Spring 基于模板设计模式对于上述的持久层技术进行了封装。 2、Spring 可以与哪些持久层技术整合 1、JDBC JDBCTemplate 2、Hibern （JPA） HibernateTemplate 3、MyBatis SQLSessionFactoryBean MapperScannerConfigure 第二章、Spring 与 MyBatis 整合 1、MyBatis 开发步骤的回顾 1、实体 2、实体别名 3、表 4、创建 DAO 接口 5、实现 Mapper 文件 6、注册 Mapper 文件 7、MybatisAPI 调用 2、MyBatis 在开发中的问题 1、开发繁琐 2、代码冗余 3、Spring 与 MyBatis 的整合 4、Spring 与 MyBatis 整合的开发步骤   搭建开发环境（jar）">
+
+<meta itemprop="wordCount" content="536">
+
+
+
+<meta itemprop="keywords" content="" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="第一章、持久层整合 1、Spring 框架为什么要与持久层技术整合 1、JavaEE 开发需要持久层进行数据库的访问操作； 2、JDBC Hibernate MyBatis 进行持久开发过程存在大量的代码冗余； 3、Spring 基于模板设计模式对于上述的持久层技术进行了封装。 2、Spring 可以与哪些持久层技术整合 1、JDBC JDBCTemplate 2、Hibern （JPA） HibernateTemplate 3、MyBatis SQLSessionFactoryBean MapperScannerConfigure 第二章、Spring 与 MyBatis 整合 1、MyBatis 开发步骤的回顾 1、实体 2、实体别名 3、表 4、创建 DAO 接口 5、实现 Mapper 文件 6、注册 Mapper 文件 7、MybatisAPI 调用 2、MyBatis 在开发中的问题 1、开发繁琐 2、代码冗余 3、Spring 与 MyBatis 的整合 4、Spring 与 MyBatis 整合的开发步骤   搭建开发环境（jar）"/>
+
+
+<meta property="og:title" content="" />
+<meta property="og:description" content="第一章、持久层整合 1、Spring 框架为什么要与持久层技术整合 1、JavaEE 开发需要持久层进行数据库的访问操作； 2、JDBC Hibernate MyBatis 进行持久开发过程存在大量的代码冗余； 3、Spring 基于模板设计模式对于上述的持久层技术进行了封装。 2、Spring 可以与哪些持久层技术整合 1、JDBC JDBCTemplate 2、Hibern （JPA） HibernateTemplate 3、MyBatis SQLSessionFactoryBean MapperScannerConfigure 第二章、Spring 与 MyBatis 整合 1、MyBatis 开发步骤的回顾 1、实体 2、实体别名 3、表 4、创建 DAO 接口 5、实现 Mapper 文件 6、注册 Mapper 文件 7、MybatisAPI 调用 2、MyBatis 在开发中的问题 1、开发繁琐 2、代码冗余 3、Spring 与 MyBatis 的整合 4、Spring 与 MyBatis 整合的开发步骤   搭建开发环境（jar）" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liam98908.github.io/post/spring-%E6%8C%81%E4%B9%85%E5%B1%82/" />
+
+
+
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/print.css"
+        media="print">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/poole.css">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/hyde.css">
+
+  
+
+
+  <link type="text/css" rel="stylesheet" href="/css/blog.css">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous" />
+
+  <link rel="apple-touch-icon-precomposed"
+        sizes="144x144"
+        href="/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  </head>
+<body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      
+        
+        <div class="author-image">
+          <img src="/images/head.jpg" class="img-circle img-headshot center" alt="Profile Picture">
+        </div>
+        
+      
+
+      <h1>liam</h1>
+
+      
+      <p class="lead">My Blog</p>
+      
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="https://liam98908.github.io">Home</a>
+        </li>
+        <li>
+          <a href="/post/">Posts</a>
+        </li><li>
+          <a href="/about/about-me">About</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="social-icons">
+      
+      <a href="https://github.com/liam12138" rel="me" title="GitHub" target="_blank">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      
+    </section>
+  </div>
+</aside>
+
+
+  <main class="content container">
+  <div class="post">
+  <h1></h1>
+
+  <div class="post-date">
+    <time datetime="0001-01-01T00:00:00Z">Jan 1, 0001</time> &middot; 3 min read
+  </div>
+
+  <h1 id="第一章持久层整合">第一章、持久层整合</h1>
+<h2 id="1spring-框架为什么要与持久层技术整合">1、Spring 框架为什么要与持久层技术整合</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">1、JavaEE 开发需要持久层进行数据库的访问操作；
+2、JDBC Hibernate MyBatis 进行持久开发过程存在大量的代码冗余；
+3、Spring 基于模板设计模式对于上述的持久层技术进行了封装。
+</code></pre></div><h2 id="2spring-可以与哪些持久层技术整合">2、Spring 可以与哪些持久层技术整合</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">1、JDBC
+	JDBCTemplate
+2、Hibern （JPA）
+	HibernateTemplate
+3、MyBatis
+	SQLSessionFactoryBean MapperScannerConfigure
+</code></pre></div><h1 id="第二章spring-与-mybatis-整合">第二章、Spring 与 MyBatis 整合</h1>
+<h2 id="1mybatis-开发步骤的回顾">1、MyBatis 开发步骤的回顾</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">1、实体
+2、实体别名
+3、表
+4、创建 DAO 接口
+5、实现 Mapper 文件
+6、注册 Mapper 文件
+7、MybatisAPI 调用
+</code></pre></div><h2 id="2mybatis-在开发中的问题">2、MyBatis 在开发中的问题</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">1、开发繁琐
+2、代码冗余
+</code></pre></div><h2 id="3spring-与-mybatis-的整合">3、Spring 与 MyBatis 的整合</h2>
+<p><img src="../images/image-20200529133547864.png" alt="image-20200529133547864"></p>
+<h2 id="4spring-与-mybatis-整合的开发步骤">4、Spring 与 MyBatis 整合的开发步骤</h2>
+<ul>
+<li>
+<p>搭建开发环境（jar）</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;dependency&gt;</span>
+    <span style="color:#f92672">&lt;groupId&gt;</span>com.alibaba<span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId&gt;</span>druid<span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version&gt;</span>1.1.18<span style="color:#f92672">&lt;/version&gt;</span>
+<span style="color:#f92672">&lt;/dependency&gt;</span>
+  
+<span style="color:#f92672">&lt;dependency&gt;</span>
+    <span style="color:#f92672">&lt;groupId&gt;</span>org.mybatis<span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId&gt;</span>mybatis-spring<span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version&gt;</span>2.0.4<span style="color:#f92672">&lt;/version&gt;</span>
+<span style="color:#f92672">&lt;/dependency&gt;</span>
+  
+<span style="color:#f92672">&lt;dependency&gt;</span>
+    <span style="color:#f92672">&lt;groupId&gt;</span>org.springframework<span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId&gt;</span>spring-jdbc<span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version&gt;</span>5.2.3.RELEASE<span style="color:#f92672">&lt;/version&gt;</span>
+<span style="color:#f92672">&lt;/dependency&gt;</span>
+  
+<span style="color:#f92672">&lt;dependency&gt;</span>
+    <span style="color:#f92672">&lt;groupId&gt;</span>org.mybatis<span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId&gt;</span>mybatis<span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version&gt;</span>3.4.6<span style="color:#f92672">&lt;/version&gt;</span>
+<span style="color:#f92672">&lt;/dependency&gt;</span>
+</code></pre></div></li>
+<li>
+<p>Spring 配置文件</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#75715e">&lt;!--连接池--&gt;</span>
+    <span style="color:#f92672">&lt;bean</span> <span style="color:#a6e22e">id=</span><span style="color:#e6db74">&#34;dataSource&#34;</span> <span style="color:#a6e22e">class=</span><span style="color:#e6db74">&#34;com.alibaba.druid.pool.DruidDataSource&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;driverClassName&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;com.mysql.jdbc.Driver&#34;</span><span style="color:#f92672">/&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;url&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;jdbc:mysql://localhost:3306/test?useSSL=false&#34;</span><span style="color:#f92672">/&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;username&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;root&#34;</span><span style="color:#f92672">/&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;password&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;123456&#34;</span><span style="color:#f92672">/&gt;</span>
+    <span style="color:#f92672">&lt;/bean&gt;</span>
+  
+    <span style="color:#75715e">&lt;!--创建 SqlSessionFactory SqlSessionFactoryBean--&gt;</span>
+    <span style="color:#f92672">&lt;bean</span> <span style="color:#a6e22e">id=</span><span style="color:#e6db74">&#34;sqlSessionFactoryBean&#34;</span> <span style="color:#a6e22e">class=</span><span style="color:#e6db74">&#34;org.mybatis.spring.SqlSessionFactoryBean&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;dataSource&#34;</span> <span style="color:#a6e22e">ref=</span><span style="color:#e6db74">&#34;dataSource&#34;</span><span style="color:#f92672">&gt;&lt;/property&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;typeAliasesPackage&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;entity&#34;</span><span style="color:#f92672">&gt;&lt;/property&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;mapperLocations&#34;</span><span style="color:#f92672">&gt;</span>
+            <span style="color:#f92672">&lt;list&gt;</span>
+                <span style="color:#f92672">&lt;value&gt;</span>classpath:mapper/*Mapper.xml<span style="color:#f92672">&lt;/value&gt;</span>
+            <span style="color:#f92672">&lt;/list&gt;</span>
+        <span style="color:#f92672">&lt;/property&gt;</span>
+    <span style="color:#f92672">&lt;/bean&gt;</span>
+  
+    <span style="color:#75715e">&lt;!--创建DAO对象 MapperScannerConfigure--&gt;</span>
+    <span style="color:#f92672">&lt;bean</span> <span style="color:#a6e22e">id=</span><span style="color:#e6db74">&#34;scanner&#34;</span> <span style="color:#a6e22e">class=</span><span style="color:#e6db74">&#34;org.mybatis.spring.mapper.MapperScannerConfigurer&#34;</span><span style="color:#f92672">&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;sqlSessionFactoryBeanName&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;sqlSessionFactoryBean&#34;</span><span style="color:#f92672">&gt;&lt;/property&gt;</span>
+        <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;basePackage&#34;</span> <span style="color:#a6e22e">value=</span><span style="color:#e6db74">&#34;dao&#34;</span><span style="color:#f92672">&gt;&lt;/property&gt;</span>
+    <span style="color:#f92672">&lt;/bean&gt;</span>
+</code></pre></div></li>
+<li>
+<p>编码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">1、实体
+2、表
+3、DAO 接口
+4、Mapper 文件配置
+</code></pre></div></li>
+</ul>
+<h2 id="5spring-与-mybatis-整合细节">5、Spring 与 MyBatis 整合细节</h2>
+<ul>
+<li>
+<p>问题：Spring 与 MyBatis 整合后，为什么 DAO 不提交事务，但是数据能够插入数据库中？</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">Connection --&gt; tx
+MyBatis (connection)
+  
+本质上控制连接对象(Connection) ---&gt; 连接池(DataSource)
+1.Mybatis 提供的连接池对象 ---&gt; 创建 Connection
+  Connection.setAutoCommit(false) 手工的控制了事务，操作完成后，手工提交
+2.Druid(C3P0 DBCP)作为连接池 ---&gt; 创建 Connection
+  Connection.setAutoCommit(true) true 默认值 保持自动控制事务，一条 SQL 自动提交
+答案：因为 Spring 与 MyBatis 整合时，引入了外部连接池对象，保持自动的事务提交这个机制(Connection.setAutoCommit(true))，不需要手工进行事务的操作，也能进行提交。
+  
+注意：未来实战中，还会手工控制事务（多条 SQL 一起成功，一起失败），后续 Spring 通过事务控制解决这个问题
+</code></pre></div></li>
+</ul>
+<h1 id="第三章spring的事务处理">第三章、Spring的事务处理</h1>
+<h2 id="1什么是事务">1、什么是事务？</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">保证业务操作完整性的一种数据库机制
+
+事务的4个特点： A C I D
+1、A 原子性
+2、C 一致性
+3、I 隔离性
+4、D 持久性
+</code></pre></div><h2 id="2如何控制事务">2、如何控制事务</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">JDBC:
+	Connection.setAutoCommit(false);
+	Connection.commit();
+	Connection.rollback();
+Mybatis:
+	Mybatis 自动开启事务
+	sqlSession(Connection).commit();
+	sqlSession(Connection).rollback();
+	
+结论：控制事务的底层，都是 Connection 对象完成的。
+</code></pre></div><h2 id="3spring-控制事务开发">3、Spring 控制事务开发</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">Spring 是通过 AOP 的方式进行事务开发的
+</code></pre></div><ol>
+<li>
+<p>原始对象</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">public class XXXUserServiceImpl{
+ private XXXDAO xxxDao;
+ set get
+   	
+ 1.原始对象 ---&gt; 原始方法 ---&gt; 核心功能(业务处理 + DAO调用)
+ 2.DAO 作为 Service 的成员变量，依赖注入的方式进行赋值
+}
+</code></pre></div></li>
+<li>
+<p>额外功能</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">org.springframework.jdbc.datasource.DataSourceTransactionManager
+<span style="color:#66d9ef">1.</span> MethodInterceptor
+ public Object invoke(MethodInvocation invocation) {
+     try {
+         Connection.setAutoCommit(false);
+         Object ret = invocation.proceed();
+         Connection.commit();
+     } catch (Exception e) {
+         Connection.rollback();
+     }
+     return ret;
+ }
+<span style="color:#66d9ef">2.</span> @Aspect
+   @Around
+</code></pre></div></li>
+<li>
+<p>切入点</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">@Transactional
+事务的额外功能加入给那些业务方法。
+<span style="color:#66d9ef">1.</span> 类上：类中所有的方法都会加入事务
+<span style="color:#66d9ef">2.</span> 方法上：这个方法会加入事务
+</code></pre></div></li>
+<li>
+<p>组装切面</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown"><span style="color:#66d9ef">1.</span> 切入点
+<span style="color:#66d9ef">2.</span> 额外功能
+&lt;<span style="color:#f92672">tx:annotation-driven</span> <span style="color:#a6e22e">transaction-manager</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>/&gt;
+</code></pre></div></li>
+</ol>
+<h2 id="4spring-控制事务的编码">4、Spring 控制事务的编码</h2>
+<ul>
+<li>
+<p>搭建开发环境(jar)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;dependency&gt;</span>
+    <span style="color:#f92672">&lt;groupId&gt;</span>org.springframework<span style="color:#f92672">&lt;/groupId&gt;</span>
+    <span style="color:#f92672">&lt;artifactId&gt;</span>spring-tx<span style="color:#f92672">&lt;/artifactId&gt;</span>
+    <span style="color:#f92672">&lt;version&gt;</span>5.2.3.RELEASE<span style="color:#f92672">&lt;/version&gt;</span>
+<span style="color:#f92672">&lt;/dependency&gt;</span>
+</code></pre></div></li>
+<li>
+<p>编码</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;bean</span> <span style="color:#a6e22e">id=</span><span style="color:#e6db74">&#34;userService&#34;</span> <span style="color:#a6e22e">class=</span><span style="color:#e6db74">&#34;com.liam.service.impl.UserServiceImpl&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;userDAO&#34;</span> <span style="color:#a6e22e">ref=</span><span style="color:#e6db74">&#34;userDAO&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;/bean&gt;</span>
+  
+<span style="color:#75715e">&lt;!-- DataSourceTransactionManager --&gt;</span>
+<span style="color:#f92672">&lt;bean</span> <span style="color:#a6e22e">id=</span><span style="color:#e6db74">&#34;dataSourceTransactionManager&#34;</span>
+      <span style="color:#a6e22e">class=</span><span style="color:#e6db74">&#34;org.springframework.jdbc.datasource.DataSourceTransactionManager&#34;</span><span style="color:#f92672">&gt;</span>
+    <span style="color:#f92672">&lt;property</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;dataSource&#34;</span> <span style="color:#a6e22e">ref=</span><span style="color:#e6db74">&#34;dataSource&#34;</span><span style="color:#f92672">/&gt;</span>
+<span style="color:#f92672">&lt;/bean&gt;</span>
+  
+<span style="color:#f92672">&lt;tx:annotation-driven</span> <span style="color:#a6e22e">transaction-manager=</span><span style="color:#e6db74">&#34;dataSourceTransactionManager&#34;</span><span style="color:#f92672">/&gt;</span>
+@Transactional
+<span style="color:#75715e">&lt;!--
+</span><span style="color:#75715e">public class UserServiceImpl implements UserService {
+</span><span style="color:#75715e">    private UserDAO userDAO;
+</span><span style="color:#75715e">--&gt;</span>
+</code></pre></div></li>
+<li>
+<p>细节</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;tx:annotation-driven</span> <span style="color:#a6e22e">transaction-manager=</span><span style="color:#e6db74">&#34;dataSourceTransactionManager&#34;</span> <span style="color:#a6e22e">proxy-target-class=</span><span style="color:#e6db74">&#34;true&#34;</span><span style="color:#f92672">/&gt;</span>
+进行动态代理底层实现的切换 proxy-target-class
+  默认 false jdk
+      true CGlib
+</code></pre></div></li>
+</ul>
+<h1 id="第四章spring-中的事务属性transaction-attribute">第四章、Spring 中的事务属性(Transaction Attribute)</h1>
+<h2 id="1什么是事务属性">1、什么是事务属性</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">属性：描述物体特征的一系列值
+	性别 身高 体重···
+事务属性：描述事务特征的一系列值
+<span style="color:#66d9ef">1.</span> 隔离属性
+<span style="color:#66d9ef">2.</span> 传播属性
+<span style="color:#66d9ef">3.</span> 只读属性
+<span style="color:#66d9ef">4.</span> 超时属性
+<span style="color:#66d9ef">5.</span> 异常属性
+</code></pre></div><h2 id="2如何添加事务属性">2、如何添加事务属性</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">@Transactional(isolation=, propagation=, readOnly=, timeout=, rollbackFor=, noRollbackFor=)
+</code></pre></div><h2 id="3事务属性详解">3、事务属性详解</h2>
+<ol>
+<li>
+<p>隔离属性</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">概念：他描述了事务解决问题并发问题的特征
+<span style="color:#66d9ef">1.</span> 什么是并发
+ 多个事务（用户）在同一时间，访问操作了相同的数据
+<span style="color:#66d9ef">2.</span> 并发会产生的问题
+ <span style="color:#66d9ef">1.</span> 脏读
+ <span style="color:#66d9ef">2.</span> 不可重复读
+ <span style="color:#66d9ef">3.</span> 幻读
+<span style="color:#66d9ef">3.</span> 并发问题如何解决
+ 通过隔离属性解决，隔离属性中设置不同的值，解决并发处理过程中的问题。
+</code></pre></div><p>事务并发产生的问题</p>
+<ul>
+<li>
+<p>脏读</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">一个事务，读取了另一个事务中没有提交的数据。会在本数据中产生数据不一致的问题
+解决方案：@Transactional(isolation=Isolation.READ_COMMITTED)
+</code></pre></div></li>
+<li>
+<p>不可重复读</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">一个事务中，多次读取相同的数据，但是读取结果不一样，会在数据中产生数据不一致问题
+注意：1 不是脏读 2 一个事务中
+解决方案 @Transactional(isolation=Isolation.REPEATABLE_READ)
+本质：一把行锁
+</code></pre></div></li>
+<li>
+<p>幻读</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">一个事务中，多次对整表进行查询统计，但是结果不一样，会在事务中产生数据不一致的问题
+解决方案 @Transactional(isolation=Isolation.SERIALIZABLE)
+</code></pre></div></li>
+<li>
+<p>总结</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">并发安全：SERIALIZABLE &gt; REPEATABLE_READ &gt; READ_COMMITTED
+运行效率：READ_COMMITTED &gt; REPEATABLE_READ &gt; SERIALIZABLE
+</code></pre></div></li>
+</ul>
+<p>数据库对于隔离属性的支持</p>
+<table>
+<thead>
+<tr>
+<th>隔离属性值</th>
+<th>MySQL</th>
+<th>Oracle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>READ_COMMITTED</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>REPEATABLE_READ</td>
+<td>yes</td>
+<td>no</td>
+</tr>
+<tr>
+<td>SERIALIZABLE</td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">Oracle 不支持 REPEATABLE_READ 值 如何解决不可重复读
+采用的是多版本对比的方式 解决不可重复读的问题
+</code></pre></div><p>查看数据库默认隔离属性</p>
+<ul>
+<li>mysql</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">select @@tx_islation;
+</code></pre></div><ul>
+<li>Oracle</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">略
+</code></pre></div><p>隔离属性在实战中的建议</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">推荐使用 Spring 指定的 ISOLATION_DEFAULT
+<span style="color:#66d9ef">1.</span> MySQL	repeatable_read
+<span style="color:#66d9ef">2.</span> Oracle	read_commited
+未来的实战中，并发访问的情况很低
+如果真的遇到，建议使用乐观锁
+ Hibernate(JPA)	Version
+ MyBatis			通过拦截器自定义开发
+</code></pre></div></li>
+<li>
+<p>传播属性(PROPAGATION)</p>
+<p>传播属性的概念</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">他描述了事务嵌套问题的特征
+什么叫事务的嵌套：他指的是一个大的事务中，包含了若干个小
+问题：大事务中融入了很多的小事务，他们彼此影响，最终会导致外部大的事务，丧失了事务的原子性
+</code></pre></div><p>传播属性的值及用法</p>
+<p><img src="../images/image-20200529194404508.png" alt="image-20200529194404508"></p>
+<p>默认的传播属性</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">REQUIRED 是传播属性的默认值
+</code></pre></div><p>推荐传播属性的使用方式</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">增删改	方法：直接使用默认值
+查询	 操作：显示指定传播属性的值为 SPPORTS
+</code></pre></div></li>
+<li>
+<p>只读属性(readOnly)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">针对于只进行查询操作的业务方法，可以加入只读属性，提供运行效率
+默认值：false
+</code></pre></div></li>
+<li>
+<p>超时属性(timeout)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">制定了事务等待的最长时间
+<span style="color:#66d9ef">1.</span> 为什么事务进行等待？
+ 当前事务访问数据时，有可能访问的数据别的事务进行加锁的处理，那么此时本事务就必须等待。
+<span style="color:#66d9ef">2.</span> 等待时间 S
+<span style="color:#66d9ef">3.</span> 应用 @Transactional(timeout=2)
+<span style="color:#66d9ef">4.</span> 超时属性的默认值 -1
+ 最终由对应的数据库来指定
+</code></pre></div></li>
+<li>
+<p>异常属性</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">Spring 事务处理过程中
+默认 对于 RuntimeException 及其子类，采用的是回滚的策略
+默认 对于 Exception 及其子类，采用的是提交的策略
+   
+rollbackFor = {java.lang.Exception, xxx, xxx}
+noRollbackFor = {java.lang.RuntimeException, xxx, xxx}
+   
+@Transactional(rollbackFor = {java.lang.Exception.class}, noRollbackFor = {java.lang.RuntimeException.class})
+建议：实战中使用 RuntimeException 及其子类，使用事务异常属性的默认值
+</code></pre></div></li>
+</ol>
+<h2 id="4事务属性常见配置总结">4、事务属性常见配置总结</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown"><span style="color:#66d9ef">1.</span> 隔离属性	默认值
+<span style="color:#66d9ef">2.</span> 传播属性	Required(默认值)	增删改	Supports	查询操作
+<span style="color:#66d9ef">3.</span> 只读属性	readOnly false	  增删改	true	  查询操作
+<span style="color:#66d9ef">4.</span> 超时属性	默认值 -1
+<span style="color:#66d9ef">5.</span> 异常属性	默认值
+
+增删改操作	@Transactional
+查询操作	 @Transcational(propagation = Propagation.SUPPORTS, readOnly=true)
+</code></pre></div>
+</div>
+
+
+  </main>
+
+  <footer>
+  <div>
+    &copy; liam 2020
+
+    &middot; <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>
+
+    
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"
+          integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0="
+          crossorigin="anonymous"></script>
+
+  <script src="/js/blog.js"></script>
+
+  
+</body>
+</html>

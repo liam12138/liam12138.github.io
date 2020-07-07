@@ -2,45 +2,63 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>liam</title>
-    <link>https://liam12138.github.io/</link>
+    <link>https://liam98908.github.io/</link>
     <description>Recent content on liam</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Sun, 10 May 2020 12:46:01 +0800</lastBuildDate>
     
-	<atom:link href="https://liam12138.github.io/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://liam98908.github.io/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Spring AOP</title>
-      <link>https://liam12138.github.io/post/springaop/</link>
+      <link>https://liam98908.github.io/post/springaop/</link>
       <pubDate>Sun, 10 May 2020 12:46:01 +0800</pubDate>
       
-      <guid>https://liam12138.github.io/post/springaop/</guid>
+      <guid>https://liam98908.github.io/post/springaop/</guid>
       <description>第一章、AOP编程 1、AOP概念 AOP(Aspect Oriented Programing) 面向切面编程 = Spring 动态代理开发 以切面为基本单位的程序开发，通过切面间的彼此协同，完成程序的构建 切面 = 切入点 + 额外功能 OOP(Object Oriented Programing) 面向对象编程 Java 以对象为基本单位的程序开发，通过对象的彼此协同，相互调用，完成程序的构建 POP(Producer Oriented Programing) 面向过程编程 C 以过程为基本单位的程序开发 AOP概念： 本质就是 Spring 的动态代理开发，通过代理类为原始类增加额外功能。 好处：利于原始类的维护 注意：AOP编程不可能取代OOP，OOP编程有意补充。 2、AOP编程的开发步骤 原始对象额外功能（MethodInterceptor）切入点组装切面（额外功能 + 切入点）3、切面的名词解释 第二章、AOP的底层原理 1、核心问题 1、AOP如何创建动态代理类（动态字节码技术）2、Spring工厂如何加工创建代理对象通过原始对象的id值，获得的是代理对象2、动态代理类的创建 2.</description>
     </item>
     
     <item>
       <title></title>
-      <link>https://liam12138.github.io/about/about-me/</link>
+      <link>https://liam98908.github.io/about/about-me/</link>
       <pubDate>Mon, 20 Apr 2020 18:46:01 +0800</pubDate>
       
-      <guid>https://liam12138.github.io/about/about-me/</guid>
+      <guid>https://liam98908.github.io/about/about-me/</guid>
       <description>个人信息  liam/男/1999 本科 期望职位：大数据开发工程师 证书：阿里云ACA认证（Big Data）  联系方式  Email：liam98908@163.</description>
     </item>
     
     <item>
       <title>大数据相关知识点</title>
-      <link>https://liam12138.github.io/post/bigdata1/</link>
+      <link>https://liam98908.github.io/post/bigdata1/</link>
       <pubDate>Mon, 20 Apr 2020 18:46:01 +0800</pubDate>
       
-      <guid>https://liam12138.github.io/post/bigdata1/</guid>
+      <guid>https://liam98908.github.io/post/bigdata1/</guid>
       <description>1、HDFS HDFS概念 HDFS 是一个分布式的文件系统，由很多服务器联合起来实现其功能。
 优点
 高容错性、适合处理大量的数据、可以构建在廉价的机器上。
 缺点
 不适合低延时访问、无法对大量 的小文件进行存储、不支持并发写和修改。
 组成架构</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://liam98908.github.io/post/spring-%E6%8C%81%E4%B9%85%E5%B1%82/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://liam98908.github.io/post/spring-%E6%8C%81%E4%B9%85%E5%B1%82/</guid>
+      <description>第一章、持久层整合 1、Spring 框架为什么要与持久层技术整合 1、JavaEE 开发需要持久层进行数据库的访问操作； 2、JDBC Hibernate MyBatis 进行持久开发过程存在大量的代码冗余； 3、Spring 基于模板设计模式对于上述的持久层技术进行了封装。 2、Spring 可以与哪些持久层技术整合 1、JDBC JDBCTemplate 2、Hibern （JPA） HibernateTemplate 3、MyBatis SQLSessionFactoryBean MapperScannerConfigure 第二章、Spring 与 MyBatis 整合 1、MyBatis 开发步骤的回顾 1、实体 2、实体别名 3、表 4、创建 DAO 接口 5、实现 Mapper 文件 6、注册 Mapper 文件 7、MybatisAPI 调用 2、MyBatis 在开发中的问题 1、开发繁琐 2、代码冗余 3、Spring 与 MyBatis 的整合 4、Spring 与 MyBatis 整合的开发步骤   搭建开发环境（jar）</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://liam98908.github.io/post/spring-%E6%B3%A8%E8%A7%A3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://liam98908.github.io/post/spring-%E6%B3%A8%E8%A7%A3/</guid>
+      <description>第一章、注解基础概念 1. 什么是注解编程 在类或者方法上加入特定的注解(@XXX)，完成特定功能的开发 @Component public class XXX() 2. 为什么要讲注解编程 1.</description>
     </item>
     
   </channel>
