@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.69.2" />
+
+  <title> &middot; liam</title>
+
+  <meta name="description" content="" />
+
+  
+
+<meta itemprop="name" content="">
+<meta itemprop="description" content="安装Windows版RabbitMQ失败总结 这几天在学习RabbitMQ，由于实习公司要求安装Windows版本的，试了一下安装Windows版本的RabbitMQ。经过一天的折腾可总算把RabbitMQ给安装好了。 1. 错误界面 每次输入 rabbitmqctl status 或者 rabbitmqctl 的其他指令时，都会出现类似于下面的错误 上述显示的错误主要有三个点： 1.">
+
+<meta itemprop="wordCount" content="76">
+
+
+
+<meta itemprop="keywords" content="" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content=""/>
+<meta name="twitter:description" content="安装Windows版RabbitMQ失败总结 这几天在学习RabbitMQ，由于实习公司要求安装Windows版本的，试了一下安装Windows版本的RabbitMQ。经过一天的折腾可总算把RabbitMQ给安装好了。 1. 错误界面 每次输入 rabbitmqctl status 或者 rabbitmqctl 的其他指令时，都会出现类似于下面的错误 上述显示的错误主要有三个点： 1."/>
+
+
+<meta property="og:title" content="" />
+<meta property="og:description" content="安装Windows版RabbitMQ失败总结 这几天在学习RabbitMQ，由于实习公司要求安装Windows版本的，试了一下安装Windows版本的RabbitMQ。经过一天的折腾可总算把RabbitMQ给安装好了。 1. 错误界面 每次输入 rabbitmqctl status 或者 rabbitmqctl 的其他指令时，都会出现类似于下面的错误 上述显示的错误主要有三个点： 1." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liam12138.github.io/post/%E5%AE%89%E8%A3%85windows%E7%89%88rabbitmq%E5%A4%B1%E8%B4%A5%E6%80%BB%E7%BB%93/" />
+
+
+
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/print.css"
+        media="print">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/poole.css">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/hyde.css">
+
+  
+
+
+  <link type="text/css" rel="stylesheet" href="/css/blog.css">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous" />
+
+  <link rel="apple-touch-icon-precomposed"
+        sizes="144x144"
+        href="/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  </head>
+<body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      
+        
+        <div class="author-image">
+          <img src="/images/head.jpg" class="img-circle img-headshot center" alt="Profile Picture">
+        </div>
+        
+      
+
+      <h1>liam</h1>
+
+      
+      <p class="lead">My Blog</p>
+      
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="https://liam12138.github.io/">Home</a>
+        </li>
+        <li>
+          <a href="/post/">Posts</a>
+        </li><li>
+          <a href="/about/about-me">About</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="social-icons">
+      
+      <a href="https://github.com/liam12138" rel="me" title="GitHub" target="_blank">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      
+    </section>
+  </div>
+</aside>
+
+
+  <main class="content container">
+  <div class="post">
+  <h1></h1>
+
+  <div class="post-date">
+    <time datetime="0001-01-01T00:00:00Z">Jan 1, 0001</time> &middot; 1 min read
+  </div>
+
+  <h1 id="安装windows版rabbitmq失败总结">安装Windows版RabbitMQ失败总结</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">这几天在学习RabbitMQ，由于实习公司要求安装Windows版本的，试了一下安装Windows版本的RabbitMQ。经过一天的折腾可总算把RabbitMQ给安装好了。
+</code></pre></div><h2 id="1-错误界面">1. 错误界面</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">每次输入 rabbitmqctl status 或者 rabbitmqctl 的其他指令时，都会出现类似于下面的错误
+</code></pre></div><p><img src="../images/image-20201103172521263.png" alt="image-20201103172521263"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">上述显示的错误主要有三个点：
+<span style="color:#66d9ef">1.</span> 目标节点无法访问
+<span style="color:#66d9ef">2.</span> CLI工具无法通过服务器进行身份验证（cookie不匹配）
+<span style="color:#66d9ef">3.</span> 目标节点未运行
+</code></pre></div><h2 id="2-解决方法">2. 解决方法</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">上述的错误，网上有很多的帖子都讲了如何去解决，可以自行搜搜看，这里就不在多赘述了
+</code></pre></div><p>记录最多的方法就是复制，可以自行观看网上教程操作</p>
+<p><img src="../images/image-20201103211115759.png" alt="image-20201103211115759"></p>
+<p>虽然帖子很多，我也跟着去操作和尝试了，但是始终是解决不了我自己电脑上 RabbitMQ 的问题</p>
+<h2 id="3-针对自己问题的解决方案">3. 针对自己问题的解决方案</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">经过我不断尝试，不断的卸载重装，最后也是终于解决了
+虽然不知道具体是什么原因导致的，但最终也是解决了，希望有大佬能帮忙解答一下
+</code></pre></div><p>方法：</p>
+<ul>
+<li>卸载RabbitMQ，双击uninstall</li>
+</ul>
+<p><img src="../images/image-20201103212158663.png" alt="image-20201103212158663"></p>
+<ul>
+<li>
+<p>删除 RabbitMQ 服务，管理员模式下的命令行窗口下输入 sc delete RabbitMQ</p>
+</li>
+<li>
+<p>删除缓存文件，如果被占用可以使用火绒等工具解除占用，再删除</p>
+</li>
+</ul>
+<p><img src="../images/image-20201103213046779.png" alt="image-20201103213046779"></p>
+<ul>
+<li>最后直接安装；安装时，最好用管理员的方式运行</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">最后应该就没有问题了
+</code></pre></div><h3 id="每个人的问题都不一样哈建议视情况而定反正我遇到这个问题是挺头疼的">每个人的问题都不一样哈，建议视情况而定，反正我遇到这个问题是挺头疼的</h3>
+<h2 id="4-docker-启动-rabbitmq">4. docker 启动 RabbitMQ</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">通过不断的尝试，我发现还是使用 docker 装 RabbitMQ 的方式是最简单、最快、最方便的，建议大家使用
+方式如下：
+<span style="color:#66d9ef">1.</span> 从仓库中拉取 rabbitMQ 镜像：docker pull rabbitmq
+<span style="color:#66d9ef">2.</span> 输入命令直接启动：docker run -d --hostname my-rabbit --name rabbit -e RABBITMQ_DEFAULT_USER={username} -e RABBITMQ_DEFAULT_PASS={password} -p 15672:15672 -p 5672:5672 rabbitmq:management 
+
+关于 docker 的内容，可以百度搜索，emmm
+</code></pre></div>
+</div>
+
+
+  </main>
+
+  <footer>
+  <div>
+    &copy; liam 2020
+
+    &middot; <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>
+
+    
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"
+          integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0="
+          crossorigin="anonymous"></script>
+
+  <script src="/js/blog.js"></script>
+
+  
+</body>
+</html>

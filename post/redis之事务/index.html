@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.69.2" />
+
+  <title>Redis之事务 &middot; liam</title>
+
+  <meta name="description" content="" />
+
+  
+
+<meta itemprop="name" content="Redis之事务">
+<meta itemprop="description" content="Redis 之事务 为了确保连续多个操作的原子性，一个成熟的数据库通常都会有事务支持，Redis 也同样如此。Redis 的事务使用非常简单，不同于关系数据库，我们无须理解那么多复杂的事务模 型，就可以直接使用。
+1. Redis 事务的基本使用 每个事务的操作都有 begin、commit 和 rollback，begin 指示事务的开始，commit 指示 事务的提交，rollback 指示事务的回滚。">
+<meta itemprop="datePublished" content="2020-11-11T20:58:50&#43;08:00" />
+<meta itemprop="dateModified" content="2020-11-11T20:58:50&#43;08:00" />
+<meta itemprop="wordCount" content="104">
+
+
+
+<meta itemprop="keywords" content="" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Redis之事务"/>
+<meta name="twitter:description" content="Redis 之事务 为了确保连续多个操作的原子性，一个成熟的数据库通常都会有事务支持，Redis 也同样如此。Redis 的事务使用非常简单，不同于关系数据库，我们无须理解那么多复杂的事务模 型，就可以直接使用。
+1. Redis 事务的基本使用 每个事务的操作都有 begin、commit 和 rollback，begin 指示事务的开始，commit 指示 事务的提交，rollback 指示事务的回滚。"/>
+
+
+<meta property="og:title" content="Redis之事务" />
+<meta property="og:description" content="Redis 之事务 为了确保连续多个操作的原子性，一个成熟的数据库通常都会有事务支持，Redis 也同样如此。Redis 的事务使用非常简单，不同于关系数据库，我们无须理解那么多复杂的事务模 型，就可以直接使用。
+1. Redis 事务的基本使用 每个事务的操作都有 begin、commit 和 rollback，begin 指示事务的开始，commit 指示 事务的提交，rollback 指示事务的回滚。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liam12138.github.io/post/redis%E4%B9%8B%E4%BA%8B%E5%8A%A1/" />
+<meta property="article:published_time" content="2020-11-11T20:58:50+08:00" />
+<meta property="article:modified_time" content="2020-11-11T20:58:50+08:00" />
+
+
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/print.css"
+        media="print">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/poole.css">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/hyde.css">
+
+  
+
+
+  <link type="text/css" rel="stylesheet" href="/css/blog.css">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous" />
+
+  <link rel="apple-touch-icon-precomposed"
+        sizes="144x144"
+        href="/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  </head>
+<body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      
+        
+        <div class="author-image">
+          <img src="/images/head.jpg" class="img-circle img-headshot center" alt="Profile Picture">
+        </div>
+        
+      
+
+      <h1>liam</h1>
+
+      
+      <p class="lead">My Blog</p>
+      
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="https://liam12138.github.io/">Home</a>
+        </li>
+        <li>
+          <a href="/post/">Posts</a>
+        </li><li>
+          <a href="/about/about-me">About</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="social-icons">
+      
+      <a href="https://github.com/liam12138" rel="me" title="GitHub" target="_blank">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      
+    </section>
+  </div>
+</aside>
+
+
+  <main class="content container">
+  <div class="post">
+  <h1>Redis之事务</h1>
+
+  <div class="post-date">
+    <time datetime="2020-11-11T20:58:50&#43;0800">Nov 11, 2020</time> &middot; 1 min read
+  </div>
+
+  <h2 id="redis-之事务">Redis 之事务</h2>
+<p>为了确保连续多个操作的原子性，一个成熟的数据库通常都会有事务支持，Redis 也同样如此。Redis 的事务使用非常简单，不同于关系数据库，我们无须理解那么多复杂的事务模 型，就可以直接使用。</p>
+<h3 id="1-redis-事务的基本使用">1. Redis 事务的基本使用</h3>
+<p>每个事务的操作都有 begin、commit 和 rollback，begin 指示事务的开始，commit 指示 事务的提交，rollback 指示事务的回滚。</p>
+<p>Redis 事务的形式也是差不多的，分别是 multi/exec/discard</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown"><span style="color:#66d9ef">1.</span> multi：事务的开始
+<span style="color:#66d9ef">2.</span> exec：事务的执行
+<span style="color:#66d9ef">3.</span> discard：事务的丢弃
+所有的指令在 exec 之前不执行，而是缓存在服务器的一个事务队列中，服务器一旦收到 exec 指令，才开执行整个事务队列，执行完毕后一次性返回所有指令的运行结果。
+</code></pre></div><h3 id="2-原子性">2. 原子性</h3>
+<p>事务的原子性指要么事务全部成功，要么全部失败，Redis其实是不支持原子性的：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown"><span style="color:#66d9ef">&gt; </span><span style="font-style:italic">multi
+</span><span style="font-style:italic"></span>OK
+<span style="color:#66d9ef">&gt; </span><span style="font-style:italic">set redis abc
+</span><span style="font-style:italic"></span>QUEUED
+<span style="color:#66d9ef">&gt; </span><span style="font-style:italic">incr redis
+</span><span style="font-style:italic"></span>QUEUED
+<span style="color:#66d9ef">&gt; </span><span style="font-style:italic">set book book
+</span><span style="font-style:italic"></span>QUEUED
+<span style="color:#66d9ef">&gt; </span><span style="font-style:italic">exec
+</span><span style="font-style:italic"></span>1) OK
+2) (error) ERR value is not an integer or out of range
+3) OK
+<span style="color:#66d9ef">&gt; </span><span style="font-style:italic">get redis
+</span><span style="font-style:italic"></span>&#34;abc&#34;
+<span style="color:#66d9ef">&gt; </span><span style="font-style:italic">get book
+</span><span style="font-style:italic"></span>&#34;book&#34;
+&gt;
+</code></pre></div><p>可以看到上述操作中，事务执行到中间失败了（字符串是不可以自增的），虽然失败了，但是后面的指令可以执行</p>
+<p>由此可以看出：<em><strong>Redis 的事务，是不能算原子性</strong></em> ，仅仅满足了事务的隔离性，我们可以使用 discard 丢弃队列中的指令。</p>
+<h3 id="3-为什么-redis-的事务不能支持回滚">3. 为什么 Redis 的事务不能支持回滚</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown"><span style="color:#66d9ef">1.</span> Redis 命令只会因为错误的语法而失败（并且这些问题不能在入队时发现）﹐或是命令用在了错误类型的键上面:这也就是说﹐从实用性的角度来说﹐失败的命令是由编程错误造成的﹐而这些错误应该在开发的过程中被发现﹐而不应该出现在生产环境中。
+<span style="color:#66d9ef">2.</span> Redis 处理事务的做法会产生 bug，然而需要注意的是﹐在通常情况下﹐回滚并不能解决编程错误带来的问题，如果你本来想通过 INCR 命令将键的值加上1，却不小心加上了2，又或者对错误类型的键执行了 INCR，回滚是没有办法处理这些情况的
+<span style="color:#66d9ef">3.</span> 因次 Redis 不需要对回滚进行支持﹐所以 Redis 的内部可以保持简单且快速。
+</code></pre></div>
+</div>
+
+
+  </main>
+
+  <footer>
+  <div>
+    &copy; liam 2020
+
+    &middot; <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>
+
+    
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"
+          integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0="
+          crossorigin="anonymous"></script>
+
+  <script src="/js/blog.js"></script>
+
+  
+</body>
+</html>
