@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.69.2" />
+
+  <title>Java并发编程 Executor框架 &middot; liam</title>
+
+  <meta name="description" content="" />
+
+  
+
+<meta itemprop="name" content="Java并发编程 Executor框架">
+<meta itemprop="description" content="1. 在线程中执行任务 在理想情况下，各个任务之间是相互独立的：任务并不依赖于其他任务的状态、结果或者边界效应，独立性有助于实现并发，因为如果存在足够多的处理资源，那么这些独立的任务都可以并行执行。为了在调度与负载均衡等过程中实现更高的灵活性，每项任务还应该表示应用程序的一小部分处理能力。
+2. 串行的执行任务 在应用程序中可以通过多种策略来调度任务，而其中一些策略能够更好地利用潜在的并发性。最简单的策略就是在单个线程中串行地执行各项任务。如下：
+public class SingleThreadWebServer { public static void main(String[] args) throws IOException { ServerSocket socket = new ServerSocket(80); // 串行地执行任务  while (true) { Socket connection = socket.">
+<meta itemprop="datePublished" content="2020-11-27T17:45:06&#43;08:00" />
+<meta itemprop="dateModified" content="2020-11-27T17:45:06&#43;08:00" />
+<meta itemprop="wordCount" content="375">
+
+
+
+<meta itemprop="keywords" content="" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Java并发编程 Executor框架"/>
+<meta name="twitter:description" content="1. 在线程中执行任务 在理想情况下，各个任务之间是相互独立的：任务并不依赖于其他任务的状态、结果或者边界效应，独立性有助于实现并发，因为如果存在足够多的处理资源，那么这些独立的任务都可以并行执行。为了在调度与负载均衡等过程中实现更高的灵活性，每项任务还应该表示应用程序的一小部分处理能力。
+2. 串行的执行任务 在应用程序中可以通过多种策略来调度任务，而其中一些策略能够更好地利用潜在的并发性。最简单的策略就是在单个线程中串行地执行各项任务。如下：
+public class SingleThreadWebServer { public static void main(String[] args) throws IOException { ServerSocket socket = new ServerSocket(80); // 串行地执行任务  while (true) { Socket connection = socket."/>
+
+
+<meta property="og:title" content="Java并发编程 Executor框架" />
+<meta property="og:description" content="1. 在线程中执行任务 在理想情况下，各个任务之间是相互独立的：任务并不依赖于其他任务的状态、结果或者边界效应，独立性有助于实现并发，因为如果存在足够多的处理资源，那么这些独立的任务都可以并行执行。为了在调度与负载均衡等过程中实现更高的灵活性，每项任务还应该表示应用程序的一小部分处理能力。
+2. 串行的执行任务 在应用程序中可以通过多种策略来调度任务，而其中一些策略能够更好地利用潜在的并发性。最简单的策略就是在单个线程中串行地执行各项任务。如下：
+public class SingleThreadWebServer { public static void main(String[] args) throws IOException { ServerSocket socket = new ServerSocket(80); // 串行地执行任务  while (true) { Socket connection = socket." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-executor%E6%A1%86%E6%9E%B6/" />
+<meta property="article:published_time" content="2020-11-27T17:45:06+08:00" />
+<meta property="article:modified_time" content="2020-11-27T17:45:06+08:00" />
+
+
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/print.css"
+        media="print">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/poole.css">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/hyde.css">
+
+  
+
+
+  <link type="text/css" rel="stylesheet" href="/css/blog.css">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous" />
+
+  <link rel="apple-touch-icon-precomposed"
+        sizes="144x144"
+        href="/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  </head>
+<body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      
+        
+        <div class="author-image">
+          <img src="/images/head.jpg" class="img-circle img-headshot center" alt="Profile Picture">
+        </div>
+        
+      
+
+      <h1>liam</h1>
+
+      
+      <p class="lead">My Blog</p>
+      
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="https://liam12138.github.io/">Home</a>
+        </li>
+        <li>
+          <a href="/post/">Posts</a>
+        </li><li>
+          <a href="/about/about-me">About</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="social-icons">
+      
+      <a href="https://github.com/liam12138" rel="me" title="GitHub" target="_blank">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      
+    </section>
+  </div>
+</aside>
+
+
+  <main class="content container">
+  <div class="post">
+  <h1>Java并发编程 Executor框架</h1>
+
+  <div class="post-date">
+    <time datetime="2020-11-27T17:45:06&#43;0800">Nov 27, 2020</time> &middot; 2 min read
+  </div>
+
+  <h3 id="1-在线程中执行任务">1. 在线程中执行任务</h3>
+<p>在理想情况下，各个任务之间是相互独立的：任务并不依赖于其他任务的状态、结果或者边界效应，独立性有助于实现并发，因为如果存在足够多的处理资源，那么这些独立的任务都可以并行执行。为了在调度与负载均衡等过程中实现更高的灵活性，每项任务还应该表示应用程序的一小部分处理能力。</p>
+<h3 id="2-串行的执行任务">2. 串行的执行任务</h3>
+<p>在应用程序中可以通过多种策略来调度任务，而其中一些策略能够更好地利用潜在的并发性。最简单的策略就是在单个线程中串行地执行各项任务。如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SingleThreadWebServer</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+        ServerSocket socket <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ServerSocket<span style="color:#f92672">(</span>80<span style="color:#f92672">);</span>
+        <span style="color:#75715e">// 串行地执行任务
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            Socket connection <span style="color:#f92672">=</span> socket<span style="color:#f92672">.</span><span style="color:#a6e22e">accept</span><span style="color:#f92672">();</span>
+            handleRequest<span style="color:#f92672">(</span>connection<span style="color:#f92672">);</span> <span style="color:#75715e">// 处理请求的方法，逻辑并不重要
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>SingleThreadWebServer 将串行地处理它的任务（即通过80端口接收到的HTTP请求)，这样的代码在实际生成环境中的执行性能是很糟糕的，因为它每次只能处理一个请求。主线程在接受连接与处理相关请求等操作之间不断地交替运行。当服务器正在处理请求时，新到来的连接必须等待直到请求处理完成，然后服务器将再次调用accept。如果处理请求的速度很快并且 handleRequest 可以立即返回，那么这种方法是可行的，但现实世界中的Web 服务器的情况却并非如此。</p>
+<p>如果 handleRequest 中包含了 I/O 操作，那么这里的操作通常会由于网络拥塞或者连通性问题而被阻塞。在单线程的服务器中，阻塞不仅会推迟当前请求的完成时间，而且还将彻底阻止等待中的请求被处理。如果阻塞时间过长，用户将认为服务器是不可用的，因为服务器看似失去了响应。同时，服务器的资源利用率非常低，因为当单线程在等待 I/O 操作完成时；CPU将处于空闲状态。</p>
+<p><strong>在服务器应用程序中，串行处理机制通常都无法提供高吞吐率或快速响应性。</strong></p>
+<h3 id="3-显式地为任务创建线程">3. 显式地为任务创建线程</h3>
+<p>通过为每个请求创建一个新的线程来提供服务，从而实现更高的响应性，代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ThreadPerTaskWebServer</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+        ServerSocket socket <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ServerSocket<span style="color:#f92672">(</span>80<span style="color:#f92672">);</span>
+        <span style="color:#75715e">// 为任务创建线程
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">final</span> Socket connection <span style="color:#f92672">=</span> socket<span style="color:#f92672">.</span><span style="color:#a6e22e">accept</span><span style="color:#f92672">();</span>
+            Runnable task <span style="color:#f92672">=</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+                handleRequest<span style="color:#f92672">(</span>connection<span style="color:#f92672">);</span>	<span style="color:#75715e">// 处理请求的方法，逻辑并不重要
+</span><span style="color:#75715e"></span>            <span style="color:#f92672">};</span>
+            <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(</span>task<span style="color:#f92672">).</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>ThreadPerTaskWebServer 在结构上类似于前面的单线程版本，区别在于，对于每个连接，主线程都将创建一个新线程来处理请求。</p>
+<p>优点：</p>
+<ul>
+<li>只要请求的到达率不超出服务器的请求能力，那么这种方法可以同时带来更快的响应性和吞吐率</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>线程生命周期的开销非常高。线程生命周期的开销非常高。线程的创建与销毁是有代价的。根据平台的不同，实际的开销也有所不同，但线程的创建过程都会需要时间，延迟处理的请求，并且需要 JVM 和操作系统提供一些辅助操作。如果请求的到达率非常高且请求的处理过程是轻量级的，例如大多数服务器应用程序就是这种情况，那么为每个请求创建一个新线程将消耗大量的计算资源。</li>
+<li>资源消耗。活跃的线程会消耗系统资源，尤其是内存。如果可运行的线程数量多于可用处理器的数量，那么有些线程将闲置。大量空闲的线程会占用许多内存，给垃圾回收器带来压力，而且大量线程在竞争CPU资源时还将产生其他的性能开销。</li>
+<li>稳定性。在可创建线程的数量上存在一个限制，这个限制随着平台的不同而不同，并且受多个因素制约，包括   JVM 的启动参数、Thread 构造函数中请求栈的大小等，如果破坏了破坏了这些限制，那么很有可能抛出 OutOfMemoryError 异常。</li>
+</ul>
+<h3 id="4-executor-框架">4. Executor 框架</h3>
+<p>上面两种方式都存在一些严格的限制：串行执行的问题在于其糟糕的响应性和吞吐量，而“为每个任务分配一个线程”的问题在于资源管理的复杂性。</p>
+<p>线程池简化了线程的管理工作，并且 java.util.concurrent 提供了一种灵活的线程池实现作为 Executor 框架的一部分。在 Java 类库中，任务执行的主要抽象不是 Thread，而是 Executor，Executor 接口如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Executor</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">executor</span><span style="color:#f92672">(</span>Runnable command<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Executor 为灵活且强大的异步任务执行框架提供了基础，该框架能支持多种不同类型的任务执行策略。它提供了一种标准的方法将任务的提交过程与执行过程解耦开来，并用 Runnable 来表示任务。Executor 的实现还提供了对生命周期的支持，以及统计信息收集、应用程序管理机制和性能监视等机制。</p>
+<h3 id="5-基于-executor-的-web-服务器">5. 基于 Executor 的 Web 服务器</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TaskExecutionWebServer</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> NTHREADS <span style="color:#f92672">=</span> 100<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Executor exec <span style="color:#f92672">=</span> Executors<span style="color:#f92672">.</span><span style="color:#a6e22e">newFixedThreadPool</span><span style="color:#f92672">(</span>NTHREADS<span style="color:#f92672">);</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+        ServerSocket socket <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ServerSocket<span style="color:#f92672">(</span>80<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">final</span> Socket connection <span style="color:#f92672">=</span> socket<span style="color:#f92672">.</span><span style="color:#a6e22e">accept</span><span style="color:#f92672">();</span>
+            Runnable task <span style="color:#f92672">=</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+                <span style="color:#75715e">// 处理请求
+</span><span style="color:#75715e"></span>            <span style="color:#f92672">};</span>
+            exec<span style="color:#f92672">.</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span>task<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>上述代码，使用了 Executor 的方式创建线程，可以容纳 100 个线程，并将请求处理任务的提交与任务的实际执行解耦开来。</p>
+<h3 id="6-执行策略">6. 执行策略</h3>
+<p>通过将任务的提交与执行解耦开来，从而无须太大的困难就可以为某种类型的任务指定和修改执行策略。在执行策略中定义了任务执行的 “What、Where、When、How” 等方面，包括：</p>
+<ul>
+<li>在什么（What）线程中执行任务？</li>
+<li>任务按照什么（What）执行顺序（FIFO、LIFO、优先级）？</li>
+<li>有多少个（How many）任务能并发执行？</li>
+<li>在队列中有多少个（How many）任务在等待执行？</li>
+<li>如果系统由于过载而需要拒绝一个任务，那么应该选择哪一个（Which）任务？或者，如何（How）通知应用程序有任务被拒绝？</li>
+<li>在执行一个任务前后，应该进行哪些（What）动作？</li>
+</ul>
+<p>各种执行策略都是一种资源管理工具，最佳策略取决于可用的计算资源以及对服务质量的需求。通过限制并发任务的数量，可以确保应用程序不会由于资源耗尽而失败，或者由于在稀缺资源上发生竞争而严重影响性能。通过将任务的提交与任务的执行策略分离开来，有助于在部署阶段选择与可用硬件资源最匹配的执行策略。</p>
+<h3 id="7-线程池">7. 线程池</h3>
+<p>线程池即管理一组同构工作线程的资源池，线程池是与工作队列（work queue）密切相关的，其中工作队列中保存了所有等待执行的任务。工作者线程（work thread）的任务很简单：从工作队列中获取一个任务，然后返回线程池，等待下一个任务。</p>
+<p>类库中提供了一个灵活的线程池以及一些有用的配置。可以通过调用 Executors 中的静态工厂方法之一来创建线程池：</p>
+<ul>
+<li>
+<p>newFixedThreadPool，newFixedThreadPool 将创建一个固定长度的线程池，每当提交一个任务时就创建一个线程，直到达到线程池的最大数量，这时线程池的规模将不再变化</p>
+</li>
+<li>
+<p>newCachedThreadPool，newCachedThreadPool 将创建一个可缓存的线程池，如果线程池的当前规模超过了处理需求时，那么将回收空闲的线程，而当需求增加时，则可以添加新的线程，线程池的规模不存在任何限制。</p>
+</li>
+<li>
+<p>newSingleThreadExecutor ，newSingleThreadExecutor 是一个单线程的 Executor，它创建单个工作者线程来执行任务，如果这个线程异常结束，会创建另一个线程来替代。newSingleThreadExecutor 能确保依照任务在队列中的顺序来串行执行。</p>
+</li>
+<li>
+<p>newScheduledThreadPool，newScheduledThreadPool 创建了一个固定长度的线程池，而且以延迟或定时的方式来执行任务，类似于Timer。</p>
+<p>newFixedThreadPool 和 newCachedThreadPool 这两个工厂方法返回通用的 ThreadPoolExecutor 实例，这些实例可以直接用来构造专门用途的 executor。</p>
+</li>
+</ul>
+<p>使用线程池的策略，将对应用程序的稳定性产生重大的影响：Web服务器不会再在高负载情况下失败。由于服务器不会创建数千个线程来争夺有限的 CPU 和内存资源，因此服务器的性能将平缓地降低。通过使用 Executor，可以实现各种调优、管理、监视、记录日志、错误报告和其他功能，如果不使用任务执行框架，那么要增加这些功能是非常困难的。</p>
+<h3 id="8-executor-的生命周期">8. Executor 的生命周期</h3>
+<p>由于 Executor 以异步方式来执行任务，因此在任何时刻，之前提交任务的状态不是立即可见的。有些任务可能已经完成，有些可能正在运行，而其他的任务可能在队列中等待执行。当关闭应用程序时，可能采用最平缓的关闭形式(完成所有已经启动的任务，并且不再接受任何新的任务)，也可能采用最粗暴的关闭形式(直接关掉机房的电源)，以及其他各种可能的形式。既然 Executor 是为应用程序提供服务的，因而它们也是可关闭的（无论采用平缓的方式还是粗暴的方式)，并将在关闭操作中受影响的任务的状态反馈给应用程序。</p>
+<p>为了解决执行服务的生命周期问题，Executor 扩展了 ExecutorService 接口，添加了一些用于生命周期管理的方法（同时还有一些用于任务提交的便利方法）。接口信息如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">ExecutorService</span> <span style="color:#66d9ef">extends</span> Executor <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">shutdown</span><span style="color:#f92672">();</span>
+    List<span style="color:#f92672">&lt;</span>Runnable<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">shutdownNow</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">isShutdown</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">isTerminated</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">awaitTermination</span><span style="color:#f92672">(</span><span style="color:#66d9ef">long</span> timeout<span style="color:#f92672">,</span> TimeUnit unit<span style="color:#f92672">)</span>
+        <span style="color:#66d9ef">throws</span> InterruptedException<span style="color:#f92672">;</span>
+	<span style="color:#75715e">// ...其他用于任务提交的便利方法
+</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</code></pre></div><p>ExecutorService 的生命周期有3种状态：运行、关闭和已终止。ExecutorService 在初始创建时处于运行状态。shutdown 方法将执行平缓的关闭过程:不再接受新的任务，同时等待已经提交的任务执行完成—―包括那些还未开始执行的任务。shutdownNow 方法将执行粗暴的关闭过程：它将尝试取消所有运行中的任务，并且不再启动队列中尚未开始执行的任务。</p>
+<p>通过增加生命周期支持来扩展 Web 服务器的功能，实例代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Slf4j</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LifecycleWebServer</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> ExecutorService exec <span style="color:#f92672">=</span> <span style="color:#f92672">...;</span> <span style="color:#75715e">// 接口实现省略
+</span><span style="color:#75715e"></span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">start</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> IOException <span style="color:#f92672">{</span>
+        ServerSocket socket <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ServerSocket<span style="color:#f92672">(</span>80<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(!</span>exec<span style="color:#f92672">.</span><span style="color:#a6e22e">isShutdown</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">final</span> Socket conn <span style="color:#f92672">=</span> socket<span style="color:#f92672">.</span><span style="color:#a6e22e">accept</span><span style="color:#f92672">();</span>
+                exec<span style="color:#f92672">.</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(()-&gt;{</span>
+                    handleRequest<span style="color:#f92672">(</span>conn<span style="color:#f92672">);</span> 
+                <span style="color:#f92672">});</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>RejectedExecutionException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>exec<span style="color:#f92672">.</span><span style="color:#a6e22e">isShutdown</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+                    log<span style="color:#f92672">.</span><span style="color:#a6e22e">info</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;task submission rejected&#34;</span><span style="color:#f92672">,</span> e<span style="color:#f92672">);</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">stop</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        exec<span style="color:#f92672">.</span><span style="color:#a6e22e">shutdown</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+    
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">handleRequest</span><span style="color:#f92672">(</span>Socket connection<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        Request req <span style="color:#f92672">=</span> readRequest<span style="color:#f92672">(</span>connection<span style="color:#f92672">);</span> <span style="color:#75715e">// 获取请求
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>isShutdownRequest<span style="color:#f92672">(</span>req<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// 请求已经关闭，则停止线程
+</span><span style="color:#75715e"></span>            stop<span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// 处理请求
+</span><span style="color:#75715e"></span>            dispatchRequest<span style="color:#f92672">(</span>req<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>关于 Executor 的其他详细内容，可以自行百度或者查阅《Java并发编程实战》，这里先不展开介绍。</p>
+
+</div>
+
+
+  </main>
+
+  <footer>
+  <div>
+    &copy; liam 2020
+
+    &middot; <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>
+
+    
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"
+          integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0="
+          crossorigin="anonymous"></script>
+
+  <script src="/js/blog.js"></script>
+
+  
+</body>
+</html>

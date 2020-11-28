@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.69.2" />
+
+  <title>Redis之主从同步 &middot; liam</title>
+
+  <meta name="description" content="" />
+
+  
+
+<meta itemprop="name" content="Redis之主从同步">
+<meta itemprop="description" content="在很多时候，我们为了达到 Redis 的高可用，我们都会做主从。有了主从，当 master 挂掉的时候，运维让从库来接管，服务就可以继续，否则master 需要经过数据恢复和重启的过程，这就可能会拖很长的时间，影响线上业务的持续服务。 1. CAP 原理 分布式存储的理论基石 1.">
+<meta itemprop="datePublished" content="2020-11-24T10:54:39&#43;08:00" />
+<meta itemprop="dateModified" content="2020-11-24T10:54:39&#43;08:00" />
+<meta itemprop="wordCount" content="121">
+
+
+
+<meta itemprop="keywords" content="" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Redis之主从同步"/>
+<meta name="twitter:description" content="在很多时候，我们为了达到 Redis 的高可用，我们都会做主从。有了主从，当 master 挂掉的时候，运维让从库来接管，服务就可以继续，否则master 需要经过数据恢复和重启的过程，这就可能会拖很长的时间，影响线上业务的持续服务。 1. CAP 原理 分布式存储的理论基石 1."/>
+
+
+<meta property="og:title" content="Redis之主从同步" />
+<meta property="og:description" content="在很多时候，我们为了达到 Redis 的高可用，我们都会做主从。有了主从，当 master 挂掉的时候，运维让从库来接管，服务就可以继续，否则master 需要经过数据恢复和重启的过程，这就可能会拖很长的时间，影响线上业务的持续服务。 1. CAP 原理 分布式存储的理论基石 1." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liam12138.github.io/post/redis%E4%B9%8B%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5/" />
+<meta property="article:published_time" content="2020-11-24T10:54:39+08:00" />
+<meta property="article:modified_time" content="2020-11-24T10:54:39+08:00" />
+
+
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/print.css"
+        media="print">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/poole.css">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/hyde.css">
+
+  
+
+
+  <link type="text/css" rel="stylesheet" href="/css/blog.css">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous" />
+
+  <link rel="apple-touch-icon-precomposed"
+        sizes="144x144"
+        href="/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  </head>
+<body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      
+        
+        <div class="author-image">
+          <img src="/images/head.jpg" class="img-circle img-headshot center" alt="Profile Picture">
+        </div>
+        
+      
+
+      <h1>liam</h1>
+
+      
+      <p class="lead">My Blog</p>
+      
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="https://liam12138.github.io/">Home</a>
+        </li>
+        <li>
+          <a href="/post/">Posts</a>
+        </li><li>
+          <a href="/about/about-me">About</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="social-icons">
+      
+      <a href="https://github.com/liam12138" rel="me" title="GitHub" target="_blank">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      
+    </section>
+  </div>
+</aside>
+
+
+  <main class="content container">
+  <div class="post">
+  <h1>Redis之主从同步</h1>
+
+  <div class="post-date">
+    <time datetime="2020-11-24T10:54:39&#43;0800">Nov 24, 2020</time> &middot; 1 min read
+  </div>
+
+  <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">在很多时候，我们为了达到 Redis 的高可用，我们都会做主从。有了主从，当 master 挂掉的时候，运维让从库来接管，服务就可以继续，否则master 需要经过数据恢复和重启的过程，这就可能会拖很长的时间，影响线上业务的持续服务。
+</code></pre></div><h3 id="1-cap-原理">1. CAP 原理</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">分布式存储的理论基石
+<span style="color:#66d9ef">1.</span> C - Consistent 一致性
+<span style="color:#66d9ef">2.</span> A - Availability 可用性
+<span style="color:#66d9ef">3.</span> P - Partition tolerance 分区容忍性
+</code></pre></div><p>分布式系统的节点往往都是分布在不同的机器上进行网络隔离开的，这意味着必然会有网络断开的风险，这个网络断开的场景的专业词汇叫着【网络分区】。</p>
+<p>在网络分区发生时，两个分布式节点之间无法进行通信，我们对一个节点进行的修改操作将无法同步到其他节点，所以数据的<em><strong>一致性</strong></em>将无法满足，除非我们牺牲<em><strong>可用性</strong></em>（暂停分布式服务节点服务），在网络分区发生时，不提供修改数据的功能，知道网络恢复再提供（这样就不需要数据的同步了）。</p>
+<p><em><strong>一致性和可用性</strong></em>，无法同时满足</p>
+<h3 id="2-最终一致">2. 最终一致</h3>
+<p>Redis 的主从数据是异步同步的，所以分布式的Redis 系统并不满足<em><strong>一致性</strong></em>要求，当客户端在Redis 的主节点修改了数据后，立即返回，即使在主从网络断开的情况下，主节点依旧可以正常对外提供修改服务，所以Redis 满足<em><strong>可用性</strong></em>。</p>
+<p>Redis 为了保证<em><strong>最终一致性</strong></em>，从节点会努力追赶主节点，最终从节点的状态会和主节点的状态将保持一致。如果网络断开了，主从节点的数据将会出现大量不一致，一旦网络恢复，从节点会采用多种策略努力追赶上落后的数据，继续尽力保持和主节点一致。</p>
+<h3 id="3-主从同步">3. 主从同步</h3>
+<p>Redis 同步支持主从同步和从从同步，从从同步是为了减轻主库的负担。</p>
+<h3 id="4-增量同步">4. 增量同步</h3>
+<p>Redis 同步的是指令流，主节点会将那些对自己的状态产生修改性影响的指令记录在本地的内存buffer 中，然后异步将buffer 中的指令同步到从节点，从节点一边执行同步的指令流来达到和主节点一样的状态，一边向主节点反馈自己同步的偏移量。</p>
+<p>因为内存的buffer 是有限的，Redis 的复制内存是一个定长的环形数组，如果数组内容满了，就会从头开始覆盖前面的内容（类似于环形缓冲区），如果因为网络状况不好，从节点在短时间内无法和主节点进行同步，那么当网络状况恢复时，Redis 的主节点中那些没有同步的指令在buffer 中有可能已经被后续的指令覆盖掉了，从节点将无法直接通过指令流来进行同步。</p>
+<h3 id="5-快照同步">5. 快照同步</h3>
+<p>从节点如果因为网络断开的原因违法直接通过指令流来进行同步，这个时候就需要使用<em><strong>快照同步</strong></em>了。</p>
+<p>快照同步是一个非常耗费资源的操作，它首先需要在主库上进行一次 bgsave 将当前内存的数据全部快照到磁盘文件中，然后再将快照文件的内容全部传送到从节点。从节点将快照文件接受完毕后，立即执行一次全量加载，加载之前先要将当前内存的数据清空。加载完毕后通知主节点继续进行增量同步。</p>
+<p>在整个快照同步进行的过程中，主节点的复制 buffer 还在不停的往前移动，如果快照同步的时间过长或者复制buffer 太小，都会导致同步期间的增量指令在复制 buffer 中被覆盖，这样就会导致快照同步完成后无法进行增量复制，然后会再次发起快照同步，如此极有可能会陷入快照同步的死循环。</p>
+<p><em><strong>解决方案：设置一个合理的复制 buffer 大小参数</strong></em></p>
+<h3 id="6-无盘复制">6. 无盘复制</h3>
+<p>主节点在进行快照同步时，会进行很重的文件IO 操作，特别是对于非 SSD 磁盘存储时，快照会对系统的负载产生较大影响。特别是当系统正在进行 AOF 的 fsync 操作时如果发生快照，fsync 将会被推迟执行，这就会严重影响主节点的服务效率。</p>
+<p>所以从 Redis 2.8.18 版开始支持无盘复制。无盘复制是指主服务器直接通过套接字将快照内容发送到从节点，生成快照是一个遍历的过程，主节点会一边遍历内存，一遍将序列化的内容发送到从节点，从节点还是跟之前一样，先将接收到的内容存储到磁盘文件中，再进行一次性加载。</p>
+<h3 id="7-wait-指令">7. Wait 指令</h3>
+<p>Redis 的复制是异步进行的，wait 指令可以让异步复制变身同步复制，确保系统的强一致性(不严格)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown"><span style="color:#66d9ef">&gt; </span><span style="font-style:italic">set redis redis
+</span><span style="font-style:italic"></span>OK
+<span style="color:#66d9ef">&gt; </span><span style="font-style:italic">wait 1 2
+</span><span style="font-style:italic"></span>(integer) 0
+&gt;
+</code></pre></div><p>wait 提供两个参数，第一个参数是从库的数量N，第二个参数是时间t，以毫秒为单位。</p>
+<p>它表示等待wait 指令之前的所有写操作同步到N 个从库(也就是确保N 个从库的同步没有滞后)，最多等待时间t。如果时间t=0，表示无限等待直到N 个从库同步完成达成一致。</p>
+<p>假设此时出现了网络分区，wait 指令第二个参数时间t=0，主从同步无法继续进行，wait 指令会永远阻塞，Redis 服务器将丧失可用性。</p>
+<h3 id="8-小结">8. 小结</h3>
+<p>主从复制是Redis 分布式的基础，Redis 的高可用离开了主从复制将无从进行</p>
+<p>复制功能也不是必须的，如果你将Redis 只用来做缓存，也就无需要从库做备份，挂掉了重新启动一下就行。
+<strong>摘自《Redis深度历险：核心原理和应用实践》钱文品 著</strong></p>
+
+</div>
+
+
+  </main>
+
+  <footer>
+  <div>
+    &copy; liam 2020
+
+    &middot; <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>
+
+    
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"
+          integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0="
+          crossorigin="anonymous"></script>
+
+  <script src="/js/blog.js"></script>
+
+  
+</body>
+</html>
