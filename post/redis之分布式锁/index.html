@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.69.2" />
+
+  <title>Redis之分布式锁 &middot; liam</title>
+
+  <meta name="description" content="" />
+
+  
+
+<meta itemprop="name" content="Redis之分布式锁">
+<meta itemprop="description" content="分布式应用进行逻辑处理时经常会遇到并发问题。比如，一个操作要修改用户状态，修改状态需要先读出用户的状态，在内存里进行修改，改完再存进去。如果有多个系统同时今夕操作，就会出现并发问题，因为读取和保存状态这两个操作不是原子的。
+这个时候就要使用到分布式锁来限制程序的并发执行。Redis 分布式锁就是最广泛的方案之一。
+分布式锁 分布式锁本质上要实现的目标就是在 Redis 里面占有一个位置，当别的进程也要来占用时，发现已经有人占用了，就只能放弃或者稍后再试。
+对于这样的操作，我们一般使用 setnx(set if not exists) 指令，只允许一个客户端占用，用完之后再调用 del 指令释放。">
+<meta itemprop="datePublished" content="2020-12-10T18:09:14&#43;08:00" />
+<meta itemprop="dateModified" content="2020-12-10T18:09:14&#43;08:00" />
+<meta itemprop="wordCount" content="286">
+
+
+
+<meta itemprop="keywords" content="" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Redis之分布式锁"/>
+<meta name="twitter:description" content="分布式应用进行逻辑处理时经常会遇到并发问题。比如，一个操作要修改用户状态，修改状态需要先读出用户的状态，在内存里进行修改，改完再存进去。如果有多个系统同时今夕操作，就会出现并发问题，因为读取和保存状态这两个操作不是原子的。
+这个时候就要使用到分布式锁来限制程序的并发执行。Redis 分布式锁就是最广泛的方案之一。
+分布式锁 分布式锁本质上要实现的目标就是在 Redis 里面占有一个位置，当别的进程也要来占用时，发现已经有人占用了，就只能放弃或者稍后再试。
+对于这样的操作，我们一般使用 setnx(set if not exists) 指令，只允许一个客户端占用，用完之后再调用 del 指令释放。"/>
+
+
+<meta property="og:title" content="Redis之分布式锁" />
+<meta property="og:description" content="分布式应用进行逻辑处理时经常会遇到并发问题。比如，一个操作要修改用户状态，修改状态需要先读出用户的状态，在内存里进行修改，改完再存进去。如果有多个系统同时今夕操作，就会出现并发问题，因为读取和保存状态这两个操作不是原子的。
+这个时候就要使用到分布式锁来限制程序的并发执行。Redis 分布式锁就是最广泛的方案之一。
+分布式锁 分布式锁本质上要实现的目标就是在 Redis 里面占有一个位置，当别的进程也要来占用时，发现已经有人占用了，就只能放弃或者稍后再试。
+对于这样的操作，我们一般使用 setnx(set if not exists) 指令，只允许一个客户端占用，用完之后再调用 del 指令释放。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liam12138.github.io/post/redis%E4%B9%8B%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/" />
+<meta property="article:published_time" content="2020-12-10T18:09:14+08:00" />
+<meta property="article:modified_time" content="2020-12-10T18:09:14+08:00" />
+
+
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/print.css"
+        media="print">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/poole.css">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/hyde.css">
+
+  
+
+
+  <link type="text/css" rel="stylesheet" href="/css/blog.css">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous" />
+
+  <link rel="apple-touch-icon-precomposed"
+        sizes="144x144"
+        href="/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  </head>
+<body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      
+        
+        <div class="author-image">
+          <img src="/images/head.jpg" class="img-circle img-headshot center" alt="Profile Picture">
+        </div>
+        
+      
+
+      <h1>liam</h1>
+
+      
+      <p class="lead">My Blog</p>
+      
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="https://liam12138.github.io/">Home</a>
+        </li>
+        <li>
+          <a href="/post/">Posts</a>
+        </li><li>
+          <a href="/about/about-me">About</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="social-icons">
+      
+      <a href="https://github.com/liam12138" rel="me" title="GitHub" target="_blank">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      
+    </section>
+  </div>
+</aside>
+
+
+  <main class="content container">
+  <div class="post">
+  <h1>Redis之分布式锁</h1>
+
+  <div class="post-date">
+    <time datetime="2020-12-10T18:09:14&#43;0800">Dec 10, 2020</time> &middot; 2 min read
+  </div>
+
+  <p>分布式应用进行逻辑处理时经常会遇到并发问题。比如，一个操作要修改用户状态，修改状态需要先读出用户的状态，在内存里进行修改，改完再存进去。如果有多个系统同时今夕操作，就会出现并发问题，因为读取和保存状态这两个操作不是原子的。</p>
+<p>这个时候就要使用到分布式锁来限制程序的并发执行。Redis 分布式锁就是最广泛的方案之一。</p>
+<h3 id="分布式锁">分布式锁</h3>
+<p>分布式锁本质上要实现的目标就是在 Redis 里面占有一个位置，当别的进程也要来占用时，发现已经有人占用了，就只能放弃或者稍后再试。</p>
+<p>对于这样的操作，我们一般使用 setnx(set if not exists) 指令，只允许一个客户端占用，用完之后再调用 del 指令释放。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">&gt; setnx lock true
+<span style="color:#f92672">(</span>integer<span style="color:#f92672">)</span> <span style="color:#ae81ff">1</span>
+&gt; set redis redis // 等一些列操作
+OK
+&gt; del lock
+<span style="color:#f92672">(</span>integer<span style="color:#f92672">)</span> <span style="color:#ae81ff">1</span>
+</code></pre></div><p>如果在 setnx 和 expire(设置过期时间) 之间服务器进程突然挂掉了，可能是因为机器断电或者被杀掉，就会导致 expire 得不到执行，也会造成死锁。</p>
+<p>这种问题是由于 setnx 和 expire 是两条指令，而不是原子指令，如果两条指令可以一起执行就不会出现问题。我们很容易就可以想到用 Redis 的事务来解决，但是这里却不可以，因为，expire 是依赖于 setnx 的执行结果的，如果 setnx 没有抢到锁，expire 是不应该执行的，事务里没有 if-else 分支逻辑，事务的特点是一口气执行，要么全部执行，要么一个都不执行。</p>
+<p>为了解决这个疑难，Redis 开源社区涌现了一堆分布式锁的 library，专门用来解决这个问题。为了解决这个疑难，Redis 开源社区涌现了一堆分布式锁的library，专门用来解决这个问题。如果你需要使用分布式锁，意味着你不能仅仅使用 Jedis 就行了，还得引入分布式锁的 library（读者可自行百度）。</p>
+<p>在 Redis 2.8 中加入了 set 指令的扩展参数，使得 setnx 和 expire 指令可以一起执行，彻底解决了分布式锁的乱象</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">&gt; set lock true ex <span style="color:#ae81ff">5</span> nx
+ok 
+&gt; // 其他指令
+&gt; del lock
+</code></pre></div><p>这个指令就是 setnx 和 expire 组合在一起的原子指令，它就是分布式锁的奥义所在。</p>
+<h3 id="超时问题">超时问题</h3>
+<p>Redis 的分布式锁不能解决超时问题，如果在加锁和释放锁之间的逻辑执行的太长，以至于超出了锁的超时限制，就会出现问题。因为这时候锁过期了，第二个线程重新持有了这把锁，但是紧接着第一个线程执行完了业务逻辑，就把锁给释放了，第三个线程就会在第二个线程逻辑执行完之间拿到了锁。</p>
+<p><strong>为了避免这个问题，Redis 分布式锁不要用于较长时间的任务。</strong></p>
+<h3 id="可重入性">可重入性</h3>
+<p>可重入性是指线程在持有锁的情况下再次请求加锁，如果一个锁支持同一个线程的多次加锁，那么这个锁就是可重入的。比如 Java 语言里有个 ReentrantLock 就是可重入锁。Redis 分布式锁如果要支持可重入，需要对客户端的 set 方法进行包装，使用线程的 Threadlocal 变量存储当前持有锁的计数。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RedisWithReentrantLock</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#66d9ef">private</span> ThreadLocal<span style="color:#f92672">&lt;</span>Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;&gt;</span> lockers <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ThreadLocal<span style="color:#f92672">&lt;&gt;();</span>
+    <span style="color:#66d9ef">private</span> Jedis jedis<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#a6e22e">RedisWithReentrantLock</span><span style="color:#f92672">(</span>Jedis jedis<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">jedis</span> <span style="color:#f92672">=</span> jedis<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+	
+    <span style="color:#75715e">// 加锁
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">lock</span><span style="color:#f92672">(</span>String key<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> jedis<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>key<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;nx&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;ex&#34;</span><span style="color:#f92672">,</span> 5L<span style="color:#f92672">)</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+	
+    <span style="color:#75715e">// 释放锁
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">unlock</span><span style="color:#f92672">(</span>String key<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        jedis<span style="color:#f92672">.</span><span style="color:#a6e22e">del</span><span style="color:#f92672">(</span>key<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">currentLockers</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;</span> refs <span style="color:#f92672">=</span> lockers<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>refs <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> refs<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        lockers<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> HashMap<span style="color:#f92672">&lt;&gt;());</span>
+        <span style="color:#66d9ef">return</span> lockers<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">// 获取一个锁
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">toLock</span><span style="color:#f92672">(</span>String key<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;</span> refs <span style="color:#f92672">=</span> currentLockers<span style="color:#f92672">();</span>
+        Integer refCnt <span style="color:#f92672">=</span> refs<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>key<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>refCnt <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            refs<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>key<span style="color:#f92672">,</span> refCnt <span style="color:#f92672">+</span> 1<span style="color:#f92672">);</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">boolean</span> ok <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">lock</span><span style="color:#f92672">(</span>key<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>ok<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        refs<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>key<span style="color:#f92672">,</span> 1<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">// 释放一个锁
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">toUnlock</span><span style="color:#f92672">(</span>String key<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        Map<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">,</span> Integer<span style="color:#f92672">&gt;</span> refs <span style="color:#f92672">=</span> currentLockers<span style="color:#f92672">();</span>
+        Integer refCnt <span style="color:#f92672">=</span> refs<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>key<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>refCnt <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        refCnt <span style="color:#f92672">-=</span> 1<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>refCnt <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            refs<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>key<span style="color:#f92672">,</span> refCnt<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            refs<span style="color:#f92672">.</span><span style="color:#a6e22e">remove</span><span style="color:#f92672">(</span>key<span style="color:#f92672">);</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">unlock</span><span style="color:#f92672">(</span>key<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        Jedis jedis <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Jedis<span style="color:#f92672">();</span>
+        RedisWithReentrantLock redis <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> RedisWithReentrantLock<span style="color:#f92672">(</span>jedis<span style="color:#f92672">);</span>
+
+        redis<span style="color:#f92672">.</span><span style="color:#a6e22e">toLock</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;getLock&#34;</span><span style="color:#f92672">);</span>
+        redis<span style="color:#f92672">.</span><span style="color:#a6e22e">toLock</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;getLock&#34;</span><span style="color:#f92672">);</span>
+        redis<span style="color:#f92672">.</span><span style="color:#a6e22e">unlock</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;getLock&#34;</span><span style="color:#f92672">);</span>
+        redis<span style="color:#f92672">.</span><span style="color:#a6e22e">unlock</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;getLock&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p><strong>关于分布式锁的全部内容，可以参考《Redis深度历险：核心原理和应用实践》，本文只是一个小小的摘要。</strong></p>
+
+</div>
+
+
+  </main>
+
+  <footer>
+  <div>
+    &copy; liam 2020
+
+    &middot; <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>
+
+    
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"
+          integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0="
+          crossorigin="anonymous"></script>
+
+  <script src="/js/blog.js"></script>
+
+  
+</body>
+</html>

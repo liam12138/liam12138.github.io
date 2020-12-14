@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="Hugo 0.69.2" />
 
-  <title>Java并发编程 Executor框架 &middot; liam</title>
+  <title>Java并发编程-Executor框架 &middot; liam</title>
 
   <meta name="description" content="" />
 
   
 
-<meta itemprop="name" content="Java并发编程 Executor框架">
+<meta itemprop="name" content="Java并发编程-Executor框架">
 <meta itemprop="description" content="1. 在线程中执行任务 在理想情况下，各个任务之间是相互独立的：任务并不依赖于其他任务的状态、结果或者边界效应，独立性有助于实现并发，因为如果存在足够多的处理资源，那么这些独立的任务都可以并行执行。为了在调度与负载均衡等过程中实现更高的灵活性，每项任务还应该表示应用程序的一小部分处理能力。
 2. 串行的执行任务 在应用程序中可以通过多种策略来调度任务，而其中一些策略能够更好地利用潜在的并发性。最简单的策略就是在单个线程中串行地执行各项任务。如下：
 public class SingleThreadWebServer { public static void main(String[] args) throws IOException { ServerSocket socket = new ServerSocket(80); // 串行地执行任务  while (true) { Socket connection = socket.">
@@ -24,13 +24,13 @@ public class SingleThreadWebServer { public static void main(String[] args) thro
 <meta itemprop="keywords" content="" />
 
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Java并发编程 Executor框架"/>
+<meta name="twitter:title" content="Java并发编程-Executor框架"/>
 <meta name="twitter:description" content="1. 在线程中执行任务 在理想情况下，各个任务之间是相互独立的：任务并不依赖于其他任务的状态、结果或者边界效应，独立性有助于实现并发，因为如果存在足够多的处理资源，那么这些独立的任务都可以并行执行。为了在调度与负载均衡等过程中实现更高的灵活性，每项任务还应该表示应用程序的一小部分处理能力。
 2. 串行的执行任务 在应用程序中可以通过多种策略来调度任务，而其中一些策略能够更好地利用潜在的并发性。最简单的策略就是在单个线程中串行地执行各项任务。如下：
 public class SingleThreadWebServer { public static void main(String[] args) throws IOException { ServerSocket socket = new ServerSocket(80); // 串行地执行任务  while (true) { Socket connection = socket."/>
 
 
-<meta property="og:title" content="Java并发编程 Executor框架" />
+<meta property="og:title" content="Java并发编程-Executor框架" />
 <meta property="og:description" content="1. 在线程中执行任务 在理想情况下，各个任务之间是相互独立的：任务并不依赖于其他任务的状态、结果或者边界效应，独立性有助于实现并发，因为如果存在足够多的处理资源，那么这些独立的任务都可以并行执行。为了在调度与负载均衡等过程中实现更高的灵活性，每项任务还应该表示应用程序的一小部分处理能力。
 2. 串行的执行任务 在应用程序中可以通过多种策略来调度任务，而其中一些策略能够更好地利用潜在的并发性。最简单的策略就是在单个线程中串行地执行各项任务。如下：
 public class SingleThreadWebServer { public static void main(String[] args) throws IOException { ServerSocket socket = new ServerSocket(80); // 串行地执行任务  while (true) { Socket connection = socket." />
@@ -120,7 +120,7 @@ public class SingleThreadWebServer { public static void main(String[] args) thro
 
   <main class="content container">
   <div class="post">
-  <h1>Java并发编程 Executor框架</h1>
+  <h1>Java并发编程-Executor框架</h1>
 
   <div class="post-date">
     <time datetime="2020-11-27T17:45:06&#43;0800">Nov 27, 2020</time> &middot; 2 min read

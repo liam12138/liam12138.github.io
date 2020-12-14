@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.69.2" />
+
+  <title>Java并发编程-显式锁 &middot; liam</title>
+
+  <meta name="description" content="" />
+
+  
+
+<meta itemprop="name" content="Java并发编程-显式锁">
+<meta itemprop="description" content="在 Java5.0 之前，在协调对对象的访问时可以使用的机制只有 synchronized 和 volatile。Java5.0 增加了一种新的机制：ReentrantLock，ReentrantLock 并不是一种替代的内置加锁的方法，而是内置加锁机制不适用时，作为一种可选择的高级功能。 1. Lock 与 ReentrantLock 下面给出了 Lock 接口，Lock 接口中定义了一组抽象的加锁操作，与内置加锁机制不同的是，Lock 提供了一种无条件的、可轮询的、定时的以及可以中断的锁获取操作，所有加锁和解锁的方式都是显式的。在 Lock 的实现中必须提供与内部锁相同的内存可见性语义，但在加锁语义、调度算法、顺序保证以及性能特性等方方面面可以有所不同。">
+<meta itemprop="datePublished" content="2020-12-14T13:37:40&#43;08:00" />
+<meta itemprop="dateModified" content="2020-12-14T13:37:40&#43;08:00" />
+<meta itemprop="wordCount" content="496">
+
+
+
+<meta itemprop="keywords" content="" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Java并发编程-显式锁"/>
+<meta name="twitter:description" content="在 Java5.0 之前，在协调对对象的访问时可以使用的机制只有 synchronized 和 volatile。Java5.0 增加了一种新的机制：ReentrantLock，ReentrantLock 并不是一种替代的内置加锁的方法，而是内置加锁机制不适用时，作为一种可选择的高级功能。 1. Lock 与 ReentrantLock 下面给出了 Lock 接口，Lock 接口中定义了一组抽象的加锁操作，与内置加锁机制不同的是，Lock 提供了一种无条件的、可轮询的、定时的以及可以中断的锁获取操作，所有加锁和解锁的方式都是显式的。在 Lock 的实现中必须提供与内部锁相同的内存可见性语义，但在加锁语义、调度算法、顺序保证以及性能特性等方方面面可以有所不同。"/>
+
+
+<meta property="og:title" content="Java并发编程-显式锁" />
+<meta property="og:description" content="在 Java5.0 之前，在协调对对象的访问时可以使用的机制只有 synchronized 和 volatile。Java5.0 增加了一种新的机制：ReentrantLock，ReentrantLock 并不是一种替代的内置加锁的方法，而是内置加锁机制不适用时，作为一种可选择的高级功能。 1. Lock 与 ReentrantLock 下面给出了 Lock 接口，Lock 接口中定义了一组抽象的加锁操作，与内置加锁机制不同的是，Lock 提供了一种无条件的、可轮询的、定时的以及可以中断的锁获取操作，所有加锁和解锁的方式都是显式的。在 Lock 的实现中必须提供与内部锁相同的内存可见性语义，但在加锁语义、调度算法、顺序保证以及性能特性等方方面面可以有所不同。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E6%98%BE%E5%BC%8F%E9%94%81/" />
+<meta property="article:published_time" content="2020-12-14T13:37:40+08:00" />
+<meta property="article:modified_time" content="2020-12-14T13:37:40+08:00" />
+
+
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/print.css"
+        media="print">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/poole.css">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/hyde.css">
+
+  
+
+
+  <link type="text/css" rel="stylesheet" href="/css/blog.css">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous" />
+
+  <link rel="apple-touch-icon-precomposed"
+        sizes="144x144"
+        href="/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  </head>
+<body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      
+        
+        <div class="author-image">
+          <img src="/images/head.jpg" class="img-circle img-headshot center" alt="Profile Picture">
+        </div>
+        
+      
+
+      <h1>liam</h1>
+
+      
+      <p class="lead">My Blog</p>
+      
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="https://liam12138.github.io/">Home</a>
+        </li>
+        <li>
+          <a href="/post/">Posts</a>
+        </li><li>
+          <a href="/about/about-me">About</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="social-icons">
+      
+      <a href="https://github.com/liam12138" rel="me" title="GitHub" target="_blank">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      
+    </section>
+  </div>
+</aside>
+
+
+  <main class="content container">
+  <div class="post">
+  <h1>Java并发编程-显式锁</h1>
+
+  <div class="post-date">
+    <time datetime="2020-12-14T13:37:40&#43;0800">Dec 14, 2020</time> &middot; 3 min read
+  </div>
+
+  <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">在 Java5.0 之前，在协调对对象的访问时可以使用的机制只有 synchronized 和 volatile。Java5.0 增加了一种新的机制：ReentrantLock，ReentrantLock 并不是一种替代的内置加锁的方法，而是内置加锁机制不适用时，作为一种可选择的高级功能。
+</code></pre></div><h2 id="1-lock-与-reentrantlock">1. Lock 与 ReentrantLock</h2>
+<p>下面给出了 Lock 接口，Lock 接口中定义了一组抽象的加锁操作，与内置加锁机制不同的是，Lock 提供了一种无条件的、可轮询的、定时的以及可以中断的锁获取操作，所有加锁和解锁的方式都是显式的。在 Lock 的实现中必须提供与内部锁相同的内存可见性语义，但在加锁语义、调度算法、顺序保证以及性能特性等方方面面可以有所不同。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Lock</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">lock</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">lockInterruptibly</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> InterruptedException<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">tryLock</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">tryLock</span><span style="color:#f92672">(</span><span style="color:#66d9ef">long</span> timeout<span style="color:#f92672">,</span> TimeUnit unit<span style="color:#f92672">)</span>
+        <span style="color:#66d9ef">throws</span> InterruptedException<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">unlock</span><span style="color:#f92672">();</span>
+    Condition <span style="color:#a6e22e">newCondition</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>ReentrantLock 实现了 Lock 接口，并提供了与 synchronized 相同的互斥性与内存可见性。在获取ReentrantLock 时，有着与进入同步代码块相同的内存语义，在释放 ReentrantLock 时，同样有着与退出同步代码块相同的内存语义。此外，与 synchronized 一样，ReentrantLock 还提供了可重入的加锁语义。ReentrantLock 支持在 Lock 接口中定义的所有获取锁模式，并且与 synchronized 相比，它还为处理锁的不可用性问题提供了更高的灵活性。</p>
+<p>创建这样一种锁的原因：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown"><span style="color:#66d9ef">1.</span> 内置锁能够很好地工作，但是功能上存在一定的局限性（无法中断一个正在等待获取锁的线程）
+<span style="color:#66d9ef">2.</span> 内置锁必须在获取该所的代码块中释放，无法实现非阻塞结构的加锁规则
+</code></pre></div><p>Lock 接口的标准使用形式：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">Lock lock <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ReentrantLock<span style="color:#f92672">();</span>
+<span style="color:#f92672">...</span>
+lock<span style="color:#f92672">.</span><span style="color:#a6e22e">lock</span><span style="color:#f92672">();</span>
+<span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+    <span style="color:#f92672">...</span>
+<span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+    lock<span style="color:#f92672">.</span><span style="color:#a6e22e">unlock</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>使用 Lock 接口要比内置锁的形式要复杂一些：必须要在 finally 块中释放锁。否则，如果被保护的代码块中抛出了异常，那么这个锁永远无法释放。</p>
+<p>如果没有使用 finally 来释放 Lock，那么当产生异常时，将很难追踪到最初发生错误的位置，因为没有记录应该释放锁的位置和时间。这就是 ReentrantLock 不能完全替代 synchronized 的原因：它更加“危险”，因为当程序的执行控制离开被保护的代码块时，不会自动清除锁。虽然在 finally 块中释放锁并不困难，但也可能忘记。</p>
+<h3 id="11-轮询锁与定时锁">1.1 轮询锁与定时锁</h3>
+<p>可定时的与可轮询的锁获取模式是由 tryLock 方法实现的，与无条件的锁获取模式相比，它具有更完善的错误恢复机制。在内置锁中，死锁是一个严重的问题，恢复程序的唯一方法是重新启动程序，而防止死锁的唯一方法就是在构造程序时避免出现不一致的锁顺序。可定时的与可轮询的锁提供了另一种选择：避免死锁的发生。</p>
+<p>如果不能获得所有需要的锁，那么可以使用可定时的或可轮询的锁获取方式，从而使你重新获得控制权，它会释放已经获得的锁，然后重新尝试获取所有锁（或者至少会将这个失败记录到日志，并采取其他措施)。以下是以资金的转入转出为背景的代码示例</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e">* fromAcct：转出账户
+</span><span style="color:#75715e">* toAcct：转入账户
+</span><span style="color:#75715e">*/</span>
+<span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// 转出账户尝试获取锁
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>fromAcct<span style="color:#f92672">.</span><span style="color:#a6e22e">lock</span><span style="color:#f92672">.</span><span style="color:#a6e22e">tryLock</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// 转入账户尝试获取锁
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>toAcct<span style="color:#f92672">.</span><span style="color:#a6e22e">lock</span><span style="color:#f92672">.</span><span style="color:#a6e22e">tryLock</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                    <span style="color:#75715e">// 在转出账户中查看是否有 amount 数量的金额
+</span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>fromAcct<span style="color:#f92672">.</span><span style="color:#a6e22e">getBalance</span><span style="color:#f92672">().</span><span style="color:#a6e22e">compareTo</span><span style="color:#f92672">(</span>amount<span style="color:#f92672">)</span> <span style="color:#f92672">&lt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> Exception<span style="color:#f92672">();</span>
+                    <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+                        fromAcct<span style="color:#f92672">.</span><span style="color:#a6e22e">debit</span><span style="color:#f92672">(</span>amount<span style="color:#f92672">);</span> <span style="color:#75715e">// 转出金额
+</span><span style="color:#75715e"></span>                        toAcct<span style="color:#f92672">.</span><span style="color:#a6e22e">credit</span><span style="color:#f92672">(</span>amount<span style="color:#f92672">);</span>	<span style="color:#75715e">// 转入金额
+</span><span style="color:#75715e"></span>                        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+                    <span style="color:#f92672">}</span>
+                <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+                    toAcct<span style="color:#f92672">.</span><span style="color:#a6e22e">lock</span><span style="color:#f92672">.</span><span style="color:#a6e22e">unlock</span><span style="color:#f92672">();</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+            fromAcct<span style="color:#f92672">.</span><span style="color:#a6e22e">lock</span><span style="color:#f92672">.</span><span style="color:#a6e22e">unlock</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#75715e">// 判断是否超时，超时则退出，没有超时则等待一段时间再次重试
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">nanoTime</span><span style="color:#f92672">()</span> <span style="color:#f92672">&lt;</span> stopTime<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(...);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>使用 tryLock 来获取两个锁，如果不能同时获得，那么就回退并重新尝试。在休眠时间中包括固定部分和随机部分，从而降低发生活锁（<strong>由于某些条件没有满足，导致一直重复尝试—失败—尝试—失败的过程</strong>）的可能性。如果在指定时间内不能获得所有需要的锁，那么将返回一个失败状态，从而使该操作平缓地失败。</p>
+<p><strong>定时 tryLock</strong></p>
+<p>下面代码试图在 Lock 保护的共享通信线路上发送一条消息，如果不能在指定时间内完成，代码就会失败。定时的tryLock 能够在这种带有时间限制的操作中实现独占加锁行为。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> Lock locks <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ReentrantLock<span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">trySendOnSharedLine</span><span style="color:#f92672">(</span>String message<span style="color:#f92672">,</span>
+                                       <span style="color:#66d9ef">long</span> timeout<span style="color:#f92672">,</span> TimeUnit unit<span style="color:#f92672">)</span> 
+        <span style="color:#66d9ef">throws</span> InterruptedException <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// 获取锁时设置超时时间
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>lock<span style="color:#f92672">.</span><span style="color:#a6e22e">tryLock</span><span style="color:#f92672">(</span>timeout<span style="color:#f92672">,</span> unit<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// 获取锁失败
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#75715e">// 成功获取锁
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// 发送消息，具体方法不重要（忽略）
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> sendOnSharedLine<span style="color:#f92672">(</span>message<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// 释放锁
+</span><span style="color:#75715e"></span>            lock<span style="color:#f92672">.</span><span style="color:#a6e22e">unlock</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><h3 id="12-可中断锁的获取">1.2 可中断锁的获取</h3>
+<p>正如定时的锁获取操作能在带有时间限制的操作中使用独占锁，可中断的锁获取操作同样能在可取消的操作中使用加锁。这些不可中断的阻塞机制将使得实现可取消的任务变得复杂。lockInterruptibly 方法能够在获得锁的同时保持对中断的响应，并且由于它包含在 Lock 中，因此无须创建其他类型的不可中断阻塞机制。</p>
+<p>可中断的锁获取操作的标准结构比普通的锁获取操作略微复杂一些，因为需要两个 try 块。(如果在可中断的锁获取操作中抛出了 InterruptedException，那么可以使用标准的 try-finally 加锁模式。） 在下面程序中使用了 lockInterruptibly 来实现 1.1 程序中的 sendOnSharedLine，以便在一个可取消的任务中调用它。定时的 tryLock同样能响应中断，因此当需要实现一个定时的和可中断的锁获取操作时，可以使用 tryLock 方法。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">sendOnSharedLine</span><span style="color:#f92672">(</span>String message<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> InterruptedException <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// 获取可中断的锁
+</span><span style="color:#75715e"></span>    lock<span style="color:#f92672">.</span><span style="color:#a6e22e">lockInterruptibly</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> cancellableSendOnSharedLine<span style="color:#f92672">(</span>message<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+        lock<span style="color:#f92672">.</span><span style="color:#a6e22e">unlock</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">cancellableSendOnSharedLine</span><span style="color:#f92672">(</span>String message<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#f92672">...</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h3 id="13-非块结构的加锁">1.3 非块结构的加锁</h3>
+<p>在内置锁中，锁的获取和释放等操作都是基于代码块的——释放锁的操作总是与获取锁的操作处于同一个代码块，而不考虑控制权如何退出该代码块。自动的锁释放操作简化了对程序的分析，避免了可能的编码错误，但有时侯需要更灵活的加锁规则。
+我们可以通过降低锁的粒度可以提高代码的可伸缩性。锁分段技术在基于散列的容器中实现了不同的散列链，以便使用不同的锁。我们可以通过采用类似的原则来降低链表中锁的粒度，即为每个链表节点使用一个独立的锁，使不同的线程能独立地对链表的不同部分进行操作。每个节点的锁将保护链接指针以及在该节点中存储的数据，因此当遍历或修改链表时，我们必须持有该节点上的这个锁，直到获得了下一个节点的锁，只有这样，才能释放前一个节点上的锁。（<strong>这部分内容可以参考《Java 并发编程实战》</strong>）</p>
+<h2 id="2-公平性">2. 公平性</h2>
+<p>在 ReentrantLock 的构造函数中提供了两种公平性选择：创建一个非公平的锁（默认）或者一个公平的锁。在公平的锁上，线程将按照它们发出请求的顺序来获得锁，但在非公平的锁上，则允许“插队”：当一个线程请求非公平的锁时，如果在发出请求的同时该锁的状态变为可用，那么这个线程将跳过队列中所有的等待线程并获得这个锁。非公平的 ReentrantLock 并不提倡“插队”行为，但无法防止某个线程在合适的时候进行“插队”。在公平的锁中，如果有另一个线程持有这个锁或者有其他线程在队列中等待这个锁，那么新发出请求的线程将被放入队列中。在非公平的锁中，只有当锁被某个线程持有时，新发出请求的线程才会被放入队列中。</p>
+<p>我们为什么不希望所有的锁都是公平的？毕竟，公平是一种好的行为，而不公平则是一种不好的行为，当执行加锁操作时，公平性将由于在挂起线程和恢复线程时存在的开销而极大地降低性能。在实际情况中，统计上的公平性保证——确保被阻塞的线程能最终获得锁，通常已经够用了，并且实际开销也小得多。有些算法依赖于公平的排队算法以确保它们的正确性，但这些算法并不常见。在大多数情况下，非公平锁的性能要高于公平锁的性能。</p>
+<p>与默认的 ReentrantLock 一样，内置加锁并不会提供确定的公平性保证，但在大多数情况下，在锁实现上实现统计上的公平性保证已经足够了。Java 语言规范并没有要求 JVM 以公平的方式来实现内置锁，而在各种 JVM 中也没有这样做。ReentrantLock 并没有进一步降低锁的公平性，而只是使一些已经存在的内容更明显。</p>
+<h2 id="3-在-synchronized-和-reentrantlock-之间进行选择">3. 在 synchronized 和 ReentrantLock 之间进行选择</h2>
+<p>ReentrantLock 在加锁和内存上提供的语义与与内置锁相同，此外它还提供了一些其他功能，包括定时的锁等待、可中断的锁等待、公平性，以及实现非块结构的加锁。ReentrantLock 在性能上似乎优于内置锁，其中在 Java6 中略有胜出，而在 Java5.0中则是远远胜出。但事实上，我们并没有放弃使用 synchronized。</p>
+<p>与显式锁相比，内置锁仍然具有很大的优势。内置锁为许多开发人员所熟悉，并且简洁紧凑，而且在许多现有的程序中都已经使用了内置锁——如果将这两种机制混合使用，那么不仅容易令人困惑，也容易发生错误。ReentrantLock 的危险性比同步机制要高，如果忘记在finally块中调用unlock，那么虽然代码表面上能正常运行，但实际上已经埋下了一颗定时炸弹，并很有可能伤及其他代码。仅当内置锁不能满足需求时，才可以考虑使用ReentrantLock。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">在一些内置锁无法满足需求的情况下，ReentrantLock 可以作为一种高级工具。当需要一些高级功能时才应该使用 ReentrantLock，这些功能包括：可定时的、可轮询的与可中断的锁获取操作，公平队列，以及非块结构的锁。否则，还是应该优先使用 synchronized。
+</code></pre></div><p>未来更可能会提升 synchronized 而不是 ReentrantLock 的性能，因为 synchronized 是 JVM 的内置属性，他能执行一些优化，例如对线程封闭的锁对象的锁消除优化，通过增加锁的粒度来消除内置锁的同步，而如果通过基于类库的锁来实现这些功能，则可能性不大。</p>
+<h2 id="4-读-写锁">4. 读-写锁</h2>
+<p>ReentrantLock 实现了一种标准的互斥锁：每次最多只有一个线程能持有 ReentrantLock。但对于维护数据的完整性来说，互斥通常是一种过于强硬的加锁规则，因此也就不必要地限制了并发性。互斥是一种保守的加锁策略，虽然可以避免“写/写”冲突和“写/读”冲突，但同样也避免了“读/读”冲突。在许多情况下，数据结构上的操作都是“读操作”——虽然它们也是可变的并且在某些情况下被修改，但其中<strong>大多数访问操作都是读操作</strong>。此时，如果能够放宽加锁需求，允许多个执行读操作的线程同时访问数据结构，那么将提升程序的性能。只要每个线程都能确保读取到最新的数据，并且在读取数据时不会有其他的线程修改数据，那么就不会发生问题。在这种情况下就可以使用读/写锁：一个资源可以被多个读操作访问，或者被一个写操作访问，但两者不能同时进行。</p>
+<p>下面是 ReadWriteLock 接口，接口中暴露了两个 Lock 对象，其中一个用于读操作，而另一个用于写操作。要读取由 ReadWriteLock 保护的数据，必须首先获得读取锁，当需要修改 ReadWriteLock 保护的数据时，必须首先获取写入锁。尽管两个锁看上去是彼此独立的，但读取锁和写入锁只是读—写锁对象的不同视图。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">ReadWriteLock</span> <span style="color:#f92672">{</span>
+    Lock <span style="color:#a6e22e">readLock</span><span style="color:#f92672">();</span>
+    Lock <span style="color:#a6e22e">writeLock</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>在读 – 写锁实现的加锁策略中，允许多个读操作同时进行，但每次只允许一个写操作。与 Lock 一样，ReadWriteLock 可以采用多种不同的实现方式，这些方式在性能、调度保证、获取优先性、公平性以及加锁语义等方面可能有所不同。
+读 - 写锁是一种性能优化措施，在一些特定的情况下能实现更高的并发性。在实际情况中，对于在多处理器系统上被频繁读取的数据结构，读 – 写锁能够提高性能。而在其他情况下，读 - 写锁的性能比独占锁的性能要略差一些，这是因为它们的复杂性更高。如果要判断在某种情况下使用读 - 写锁是否会带来性能提升，最好对程序进行分析。由于 ReadWriteLock 使用 Lock 来实现锁的读 – 写部分，因此如果分析结果表明读 – 写锁没有提高性能，那么可以很容易地将读 – 写锁换为独占锁。
+在读取锁和写人锁之间的交互可以采用多种实现方式。ReadWriteLock 中的一些可选实现包括:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown"><span style="color:#66d9ef">1.</span> 释放优先：当一个写入操作释放写入锁时，并且队列中同时存在读线程和写线程，那么应该优先选择读线程，写线程，还是最先发出请求的线程？
+<span style="color:#66d9ef">2.</span> 读线程插队：如果锁是由读线程持有，但有写线程正在等待，那么新到达的读线程能否立即获得访问权，还是应该在写线程后面等待？如果允许读线程插队到写线程之前，那么将提高并发性，但却可能造成写线程发生饥饿问题。
+<span style="color:#66d9ef">3.</span> 重入性：读取锁和写入锁是否是可重入的？
+<span style="color:#66d9ef">4.</span> 降级：如果一个线程持有写人锁，那么它能否在不释放该锁的情况下获得读取锁？这可能会使得写入锁被“降级”为读取锁，同时不允许其他写线程修改被保护的资源。
+<span style="color:#66d9ef">5.</span> 升级：读取锁能否优先于其他正在等待的读线程和写线程而升级为一个写入锁？在大多数的读–写锁实现中并不支持升级，因为如果没有显式的升级操作，那么很容易造成死锁。
+</code></pre></div><p>ReentrantReadWriteLock 为这两种锁都提供了可重入的加锁语义。与 ReentrantLock 类似，ReentrantReadWriteLock 在构造时也可以选择是一个非公平的锁（默认）还是一个公平的锁。在公平的锁中，等待时间最长的线程将优先获得锁。如果这个锁由读线程持有，而另一个线程请求写入锁，那么其他读线程都不能获得读取锁，直到写线程使用完并且释放了写入锁。在非公平的锁中，线程获得访问许可的顺序是不确定的。写线程降级为读线程是可以的，但从读线程升级为写线程则是不可以的（这样做会导致死锁)。</p>
+<p>下面代码的 ReadWriteMap 中使用了 ReentrantReadWriteLock 来包装 Map，从而使它能在多个读线程之间被安全地共享，并且仍然能避免“读–写”或“写-写”冲突。在现实中，ConcurrentHashMap 的性能已经很好了，因此如果只需要一个并发的基于散列的映射，那么就可以使用 ConcurrentHashMap 来代替这种方法，但如果需要对另一种 Map 实现（例如 LinkedHashMap )提供并发性更高的访问，那么可以使用这项技术。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ReadWriteMap</span><span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span> V<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Map<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span> V<span style="color:#f92672">&gt;</span> map<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> ReadWriteLock lock <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ReentrantReadWriteLock<span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Lock r <span style="color:#f92672">=</span> lock<span style="color:#f92672">.</span><span style="color:#a6e22e">readLock</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Lock w <span style="color:#f92672">=</span> lock<span style="color:#f92672">.</span><span style="color:#a6e22e">writeLock</span><span style="color:#f92672">();</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">ReadWriteMap</span><span style="color:#f92672">(</span>Map<span style="color:#f92672">&lt;</span>K<span style="color:#f92672">,</span> V<span style="color:#f92672">&gt;</span> map<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">map</span> <span style="color:#f92672">=</span> map<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">// 对 remove(), putAll(), clear() 等方法执行相同的操作
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> V <span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>K key<span style="color:#f92672">,</span> V value<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        w<span style="color:#f92672">.</span><span style="color:#a6e22e">lock</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> map<span style="color:#f92672">.</span><span style="color:#a6e22e">put</span><span style="color:#f92672">(</span>key<span style="color:#f92672">,</span> value<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+            w<span style="color:#f92672">.</span><span style="color:#a6e22e">unlock</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">// 对其他只读的 map 方法执行相同的操作
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> V <span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>Object key<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        r<span style="color:#f92672">.</span><span style="color:#a6e22e">lock</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> map<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(</span>key<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+            r<span style="color:#f92672">.</span><span style="color:#a6e22e">unlock</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="5-小结">5. 小结</h2>
+<p><strong>与内置锁相比，显式的Lock 提供了一些扩展功能，在处理锁的不可用性方面有着更高的灵活性，并且对队列行有着更好的控制。但ReentrantLock 不能完全替代synchronized，只有在synchronized无法满足需求时，才应该使用它。
+读–写锁允许多个读线程并发地访问被保护的对象，当访问以读取操作为主的数据结构时，它能提高程序的可伸缩性。</strong></p>
+<p><em><strong>更多详细内容请参考《Java 并发编程思想》——第13章 显式锁</strong></em></p>
+
+</div>
+
+
+  </main>
+
+  <footer>
+  <div>
+    &copy; liam 2020
+
+    &middot; <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>
+
+    
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"
+          integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0="
+          crossorigin="anonymous"></script>
+
+  <script src="/js/blog.js"></script>
+
+  
+</body>
+</html>

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.69.2" />
+
+  <title>Java并发编程-可利用的并行性 &middot; liam</title>
+
+  <meta name="description" content="" />
+
+  
+
+<meta itemprop="name" content="Java并发编程-可利用的并行性">
+<meta itemprop="description" content="Executor 框架帮助指定执行策略，但如果要使用 Executor，必须将任务表述为一个 Runnable。在大多数服务器应用程序中都存在一个明显的任务边界：单个客户请求。有时候，任务边界并非是显而易见的，在很多桌面应用程序中，在单个客户请求中任可能存在可发掘的并行性。本文以 HTML 页面绘制为例，进行详细说明。
+1. 串行的页面渲染器 最简单的方法就是对 HTML 文档进行串行处理。当遇到文本标签时，将其绘制到图像缓存中。当遇到图像引用时，先通过网络获取它，然后再将其绘制到图像缓存中。这种方式可能会用户感到烦恼，用户需要等待很长时间，直到现实所有文本。">
+<meta itemprop="datePublished" content="2020-12-01T08:42:38&#43;08:00" />
+<meta itemprop="dateModified" content="2020-12-01T08:42:38&#43;08:00" />
+<meta itemprop="wordCount" content="399">
+
+
+
+<meta itemprop="keywords" content="" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Java并发编程-可利用的并行性"/>
+<meta name="twitter:description" content="Executor 框架帮助指定执行策略，但如果要使用 Executor，必须将任务表述为一个 Runnable。在大多数服务器应用程序中都存在一个明显的任务边界：单个客户请求。有时候，任务边界并非是显而易见的，在很多桌面应用程序中，在单个客户请求中任可能存在可发掘的并行性。本文以 HTML 页面绘制为例，进行详细说明。
+1. 串行的页面渲染器 最简单的方法就是对 HTML 文档进行串行处理。当遇到文本标签时，将其绘制到图像缓存中。当遇到图像引用时，先通过网络获取它，然后再将其绘制到图像缓存中。这种方式可能会用户感到烦恼，用户需要等待很长时间，直到现实所有文本。"/>
+
+
+<meta property="og:title" content="Java并发编程-可利用的并行性" />
+<meta property="og:description" content="Executor 框架帮助指定执行策略，但如果要使用 Executor，必须将任务表述为一个 Runnable。在大多数服务器应用程序中都存在一个明显的任务边界：单个客户请求。有时候，任务边界并非是显而易见的，在很多桌面应用程序中，在单个客户请求中任可能存在可发掘的并行性。本文以 HTML 页面绘制为例，进行详细说明。
+1. 串行的页面渲染器 最简单的方法就是对 HTML 文档进行串行处理。当遇到文本标签时，将其绘制到图像缓存中。当遇到图像引用时，先通过网络获取它，然后再将其绘制到图像缓存中。这种方式可能会用户感到烦恼，用户需要等待很长时间，直到现实所有文本。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E5%8F%AF%E5%88%A9%E7%94%A8%E7%9A%84%E5%B9%B6%E8%A1%8C%E6%80%A7/" />
+<meta property="article:published_time" content="2020-12-01T08:42:38+08:00" />
+<meta property="article:modified_time" content="2020-12-01T08:42:38+08:00" />
+
+
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/print.css"
+        media="print">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/poole.css">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/hyde.css">
+
+  
+
+
+  <link type="text/css" rel="stylesheet" href="/css/blog.css">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous" />
+
+  <link rel="apple-touch-icon-precomposed"
+        sizes="144x144"
+        href="/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  </head>
+<body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      
+        
+        <div class="author-image">
+          <img src="/images/head.jpg" class="img-circle img-headshot center" alt="Profile Picture">
+        </div>
+        
+      
+
+      <h1>liam</h1>
+
+      
+      <p class="lead">My Blog</p>
+      
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="https://liam12138.github.io/">Home</a>
+        </li>
+        <li>
+          <a href="/post/">Posts</a>
+        </li><li>
+          <a href="/about/about-me">About</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="social-icons">
+      
+      <a href="https://github.com/liam12138" rel="me" title="GitHub" target="_blank">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      
+    </section>
+  </div>
+</aside>
+
+
+  <main class="content container">
+  <div class="post">
+  <h1>Java并发编程-可利用的并行性</h1>
+
+  <div class="post-date">
+    <time datetime="2020-12-01T08:42:38&#43;0800">Dec 1, 2020</time> &middot; 2 min read
+  </div>
+
+  <p>Executor 框架帮助指定执行策略，但如果要使用 Executor，必须将任务表述为一个 Runnable。在大多数服务器应用程序中都存在一个明显的任务边界：单个客户请求。有时候，任务边界并非是显而易见的，在很多桌面应用程序中，在单个客户请求中任可能存在可发掘的并行性。本文以 HTML 页面绘制为例，进行详细说明。</p>
+<h3 id="1-串行的页面渲染器">1. 串行的页面渲染器</h3>
+<p>最简单的方法就是对 HTML 文档进行串行处理。当遇到文本标签时，将其绘制到图像缓存中。当遇到图像引用时，先通过网络获取它，然后再将其绘制到图像缓存中。这种方式可能会用户感到烦恼，用户需要等待很长时间，直到现实所有文本。</p>
+<p>另一种串行执行方法更好一些，它先绘制文本元素，同时为图像预留出矩形的占位空间，在处理完了第一遍文本后，程序再开始下载图像，并将它们绘制到相应的占位空间中。程序如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SingleThreadRenderer</span> <span style="color:#f92672">{</span>
+   <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 页面渲染
+</span><span style="color:#75715e">     * @param source 字符串
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">renderPage</span><span style="color:#f92672">(</span>CharSequence source<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// 绘制文本元素
+</span><span style="color:#75715e"></span>        renderText<span style="color:#f92672">(</span>source<span style="color:#f92672">);</span>
+        <span style="color:#75715e">// 下载图像
+</span><span style="color:#75715e"></span>        List<span style="color:#f92672">&lt;</span>ImageData<span style="color:#f92672">&gt;</span> imageData <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;();</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>ImageData imageInfo <span style="color:#f92672">:</span> scanForImageInfo<span style="color:#f92672">(</span>source<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+            imageData<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>imageInfo<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#75715e">// 绘制图像
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>ImageData data <span style="color:#f92672">:</span> imageData<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            renderImage<span style="color:#f92672">(</span>data<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>图像下载过程的大部分时间都是在等待 IO 操作执行完成，在这期间 CPU 几乎不做任何工作。因此，这种串行执行方法没有充分地利用 CPU，使得用户在看到最终页面之前要等待过长的时间。通过将问题分解为多个独立的任务并发执行，能够获得更高的CPU利用率和响应灵敏度。</p>
+<h3 id="2-携带结果的-callable-与-future">2. 携带结果的 Callable 与 Future</h3>
+<p>Executor框架使用Runnable作为其基本的任务表示形式。Runnable是一种有很大局限的抽象，虽然run能写人到日志文件或者将结果放入某个共享的数据结构，但它不能返回一个值或抛出一个受检查的异常。</p>
+<p>许多任务实际上都是存在延迟的计算——执行数据库查询，从网络上获取资源，或者计算某个复杂的功能。对于这些任务，Callable 是一种更好的抽象:它认为主入口点（即 call）将返回&ndash;个值，并可能抛出一个异常。在 Executor 中包含了一些辅助方法能将其他类型的任务封装为一个 Callable。</p>
+<p>Runnable 和 Callable 描述的都是抽象的计算任务。这些任务通常是有范围的，即都有一个明确的起始点，并且最终会结束。Executor 执行的任务有 4 个生命周期阶段：创建、提交、开始和完成。由于有些任务可能要执行很长的时间，因此通常希望能够取消这些任务。在 Executor 框架中，已提交但尚未开始的任务可以取消，但对于那些已经开始执行的任务，只有当它们能响应中断时，才能取消。</p>
+<p>Callable 与 Future 接口</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Callable</span><span style="color:#f92672">&lt;</span>V<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+    V <span style="color:#a6e22e">call</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> Exception<span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Future</span><span style="color:#f92672">&lt;</span>V<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">cancel</span><span style="color:#f92672">(</span><span style="color:#66d9ef">boolean</span> mayInterruptIfRunning<span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">isCancelled</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">isDone</span><span style="color:#f92672">();</span>
+    V <span style="color:#a6e22e">get</span><span style="color:#f92672">()</span> <span style="color:#66d9ef">throws</span> InterruptedException<span style="color:#f92672">,</span> ExecutionException<span style="color:#f92672">,</span> CancellationException<span style="color:#f92672">;</span>
+    V <span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#66d9ef">long</span> timeout<span style="color:#f92672">,</span> TimeUnit unit<span style="color:#f92672">)</span> <span style="color:#66d9ef">throws</span> InterruptedException<span style="color:#f92672">,</span> ExecutionException<span style="color:#f92672">,</span> CancellationException<span style="color:#f92672">,</span> TimeoutException<span style="color:#f92672">;</span> 
+<span style="color:#f92672">}</span>
+</code></pre></div><p>get 方法的行为取决于任务的状态（尚未开始、正在运行、已完成）。如果任务已经完成，那么 get 会立即返回或者抛出一个 Exception，如果任务没有完成，那么 get 将该异常封装为 ExecutionException 并重新抛出，如果任务被取消，那么 get 抛出 CallcellationException。如果 get 抛出了 ExecutionException，那么可以通过 getCause 来获得被封装的初始异常。</p>
+<p>可以通过许多种方法创建一个 Future 来描述任务。ExecutorService 中的所有 submit 方法都将返回一个Future，从而将一个 Runnable 或 Callable 提交给 Executor，并得到一个 Future 用来获得任务的执行结果或者取消任务。</p>
+<h3 id="3-使用-future-实现页面渲染">3. 使用 Future 实现页面渲染</h3>
+<p>为了使页面渲染器实现更高的并发性，首先将渲染过程分解为两个任务，一个是渲染所有的文本，另一个是下载所有的图像。(因为其中一个任务是 CPU 密集型，而另一个任务是 I/O密集型，因此这种方法即使在单 CPU 系统上也能提升性能）</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">FutureRenderer</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> ExecutorService executor <span style="color:#f92672">=</span> Executors<span style="color:#f92672">.</span><span style="color:#a6e22e">newFixedThreadPool</span><span style="color:#f92672">(</span>5<span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">renderPage</span><span style="color:#f92672">(</span>CharSequence source<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span>ImageInfo<span style="color:#f92672">&gt;</span> imageInfos <span style="color:#f92672">=</span> scanForImageInfo<span style="color:#f92672">(</span>source<span style="color:#f92672">);</span>
+        <span style="color:#75715e">// 获取图像的任务
+</span><span style="color:#75715e"></span>        Callable<span style="color:#f92672">&lt;</span>List<span style="color:#f92672">&lt;</span>ImageData<span style="color:#f92672">&gt;&gt;</span> task <span style="color:#f92672">=</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+            List<span style="color:#f92672">&lt;</span>ImageData<span style="color:#f92672">&gt;</span> result <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;();</span>
+            <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>ImageInfo imageInfo <span style="color:#f92672">:</span> imageInfos<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                result<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>imageInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">downloadImage</span><span style="color:#f92672">());</span>
+            <span style="color:#f92672">}</span>
+            <span style="color:#66d9ef">return</span> result<span style="color:#f92672">;</span>
+        <span style="color:#f92672">};</span>
+        <span style="color:#75715e">// 提交任务，并获取结果
+</span><span style="color:#75715e"></span>        Future<span style="color:#f92672">&lt;</span>List<span style="color:#f92672">&lt;</span>ImageData<span style="color:#f92672">&gt;&gt;</span> future <span style="color:#f92672">=</span> executor<span style="color:#f92672">.</span><span style="color:#a6e22e">submit</span><span style="color:#f92672">(</span>task<span style="color:#f92672">);</span>
+        renderText<span style="color:#f92672">(</span>source<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            List<span style="color:#f92672">&lt;</span>ImageData<span style="color:#f92672">&gt;</span> imageData <span style="color:#f92672">=</span> future<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>
+            <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>ImageData data <span style="color:#f92672">:</span> imageData<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                renderImage<span style="color:#f92672">(</span>data<span style="color:#f92672">);</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span> <span style="color:#75715e">// 程序中断异常
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// 重新设置线程的中断状态
+</span><span style="color:#75715e"></span>            Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">().</span><span style="color:#a6e22e">interrupt</span><span style="color:#f92672">();</span>
+            <span style="color:#75715e">// 由于不需要结果，因此取消任务
+</span><span style="color:#75715e"></span>            future<span style="color:#f92672">.</span><span style="color:#a6e22e">cancel</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>ExecutionException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span> <span style="color:#75715e">// 线程异常退出
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// throw launderThrowable(e.getCause());
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Callable 和 Future 有助于表示这些协同任务之间的交互。在上述程序中，我们创建了一个 Callable 来下载所有的图像，并将提交到一个 ExecutionService。这将返回一个描述任务执行情况的 Future。当主任务需要图像时，他会等待 Future.get 的调用结果。如果幸运的话，当开始请求时，所有图像就已经下载完成了，即使没有，那图像下载任务也已经开始了。</p>
+<p>FutureRenderer使得渲染文本任务与下载图像数据的任务并发地执行。当所有图像下载完后，会显示到页面上。这将提升用户体验，不仅使用户更快地看到结果，还有效利用了并行。</p>
+<h3 id="4-任务并行化中存在的局限">4. 任务并行化中存在的局限</h3>
+<p>FutureRenderer 使用了两个任务，其中一个负责渲染文本，另一个负责下载图像。如果渲染文本的速度远远高于下载图像的速度（可能性很大)，那么程序的最终性能与串行执行时的性能差别不大，而代码却变得更复杂了。当使用两个线程时，至多能将速度提高一倍。因此，虽然做了许多工作来并发执行异构任务以提高并发度，但从中获得的并发性却是十分有限的。</p>
+<h3 id="5-使用-completionservice-实现页面渲染器">5. 使用 CompletionService 实现页面渲染器</h3>
+<p>如果向 Executor 提交了一组计算任务，并且希望在计算完成后获得结果，那么可以保留与每个任务关联的 Future，然后反复使用 get 方法，同时将参数 timeout 指定为 0，从而通过轮询来判断任务是否完成。这种方法虽然可行，但却有些繁琐。幸运的是，还有一种更好的方法：完成服务（CompletionService）。
+CompletionService 将 Executor 和 BlockingQueue 的功能融合在一起。你可以将 Callable 任务提交给它来执行，然后使用类似于队列操作的 take 和 poll 等方法来获得已完成的结果，而这些结果会在完成时将被封装为Future。ExecutorCompletionService 实现了 CompletionService，并将计算部分委托给一个 Executor。</p>
+<p>可以通过 CompletionService 从两个方面来提高页面渲染器的性能：缩短总运行时间以及提高响应性。为每一幅图像的下载都创建一个独立任务，并在线程池中执行它们，从而将串行的下载过程转换为并行的过程:这将减少下载所有图像的总时间。此外，通过从 CompletionService 中获取结果以及使每张图片在下载完成后立刻显示出来，能使用户获得一个更加动态和更高响应性的用户界面。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Renderer</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> ExecutorService executor<span style="color:#f92672">;</span>
+    Renderer<span style="color:#f92672">(</span>ExecutorService executor<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">executor</span> <span style="color:#f92672">=</span> executor<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">renderPage</span><span style="color:#f92672">(</span>CharSequence source<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        List<span style="color:#f92672">&lt;</span>ImageInfo<span style="color:#f92672">&gt;</span> info <span style="color:#f92672">=</span> scanForImageInfo<span style="color:#f92672">(</span>source<span style="color:#f92672">);</span>
+        CompletionService<span style="color:#f92672">&lt;</span>ImageData<span style="color:#f92672">&gt;</span> completionService <span style="color:#f92672">=</span> 
+            <span style="color:#66d9ef">new</span> ExecutorCompletionService<span style="color:#f92672">&lt;&gt;(</span>executor<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> ImageInfo imageInfo <span style="color:#f92672">:</span> info<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// 每获取一个图像创建一个任务
+</span><span style="color:#75715e"></span>            completionService<span style="color:#f92672">.</span><span style="color:#a6e22e">submit</span><span style="color:#f92672">(</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> imageInfo<span style="color:#f92672">.</span><span style="color:#a6e22e">downloadImage</span><span style="color:#f92672">()</span> <span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+
+        renderText<span style="color:#f92672">(</span>source<span style="color:#f92672">);</span>
+
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> t <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> t <span style="color:#f92672">&lt;</span> info<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">();</span> t<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+                Future<span style="color:#f92672">&lt;</span>ImageData<span style="color:#f92672">&gt;</span> f <span style="color:#f92672">=</span> completionService<span style="color:#f92672">.</span><span style="color:#a6e22e">take</span><span style="color:#f92672">();</span>
+                ImageData imageData <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>
+                renderImage<span style="color:#f92672">(</span>imageData<span style="color:#f92672">);</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">().</span><span style="color:#a6e22e">interrupt</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>ExecutionException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// throw launderThrowable(e.getCause());
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>多个  ExecutorCompletionService可以共享一个 Executor，因此可以创建一个对于特定计算私有，又能共享一个公共 Executor 的 ExecutorCompletionService。因此，CompletionService 的作用就相当于一组计算的句柄，这与 Future 作为单个计算的句柄是非常类似的。通过记录提交给 CompletionService 的任务数量，并计算出已经获得的已完成结果的数量，即使使用一个共享的 Executor，也能知道已经获得了所有任务结果的时间。</p>
+
+</div>
+
+
+  </main>
+
+  <footer>
+  <div>
+    &copy; liam 2020
+
+    &middot; <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>
+
+    
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"
+          integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0="
+          crossorigin="anonymous"></script>
+
+  <script src="/js/blog.js"></script>
+
+  
+</body>
+</html>

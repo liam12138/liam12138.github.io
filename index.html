@@ -23,7 +23,7 @@
 <meta property="og:description" content="My Blog" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://liam12138.github.io/" />
-<meta property="og:updated_time" content="2020-11-27T17:45:06+08:00" />
+<meta property="og:updated_time" content="2020-12-14T13:37:40+08:00" />
 
 
 
@@ -109,7 +109,62 @@
   <div class="posts">
       <article class="post">
         <h1 class="post-title">
-          <a href="https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-executor%E6%A1%86%E6%9E%B6/">Java并发编程 Executor框架</a>
+          <a href="https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E6%98%BE%E5%BC%8F%E9%94%81/">Java并发编程-显式锁</a>
+        </h1>
+
+        <div class="post-date">
+          <time datetime="2020-12-14T13:37:40&#43;0800">Dec 14, 2020</time> &middot; 3 min read
+        </div>
+
+        <div>
+          在 Java5.0 之前，在协调对对象的访问时可以使用的机制只有 synchronized 和 volatile。Java5.0 增加了一种新的机制：ReentrantLock，ReentrantLock 并不是一种替代的内置加锁的方法，而是内置加锁机制不适用时，作为一种可选择的高级功能。 1. Lock 与 ReentrantLock 下面给出了 Lock 接口，Lock 接口中定义了一组抽象的加锁操作，与内置加锁机制不同的是，Lock 提供了一种无条件的、可轮询的、定时的以及可以中断的锁获取操作，所有加锁和解锁的方式都是显式的。在 Lock 的实现中必须提供与内部锁相同的内存可见性语义，但在加锁语义、调度算法、顺序保证以及性能特性等方方面面可以有所不同。
+        </div>
+
+        <div class="read-more-link">
+          <a href="https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E6%98%BE%E5%BC%8F%E9%94%81/">Read More</a>
+        </div>
+      </article>
+      <article class="post">
+        <h1 class="post-title">
+          <a href="https://liam12138.github.io/post/redis%E4%B9%8B%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">Redis之分布式锁</a>
+        </h1>
+
+        <div class="post-date">
+          <time datetime="2020-12-10T18:09:14&#43;0800">Dec 10, 2020</time> &middot; 2 min read
+        </div>
+
+        <div>
+          分布式应用进行逻辑处理时经常会遇到并发问题。比如，一个操作要修改用户状态，修改状态需要先读出用户的状态，在内存里进行修改，改完再存进去。如果有多个系统同时今夕操作，就会出现并发问题，因为读取和保存状态这两个操作不是原子的。
+这个时候就要使用到分布式锁来限制程序的并发执行。Redis 分布式锁就是最广泛的方案之一。
+分布式锁 分布式锁本质上要实现的目标就是在 Redis 里面占有一个位置，当别的进程也要来占用时，发现已经有人占用了，就只能放弃或者稍后再试。
+对于这样的操作，我们一般使用 setnx(set if not exists) 指令，只允许一个客户端占用，用完之后再调用 del 指令释放。
+        </div>
+
+        <div class="read-more-link">
+          <a href="https://liam12138.github.io/post/redis%E4%B9%8B%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/">Read More</a>
+        </div>
+      </article>
+      <article class="post">
+        <h1 class="post-title">
+          <a href="https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E5%8F%AF%E5%88%A9%E7%94%A8%E7%9A%84%E5%B9%B6%E8%A1%8C%E6%80%A7/">Java并发编程-可利用的并行性</a>
+        </h1>
+
+        <div class="post-date">
+          <time datetime="2020-12-01T08:42:38&#43;0800">Dec 1, 2020</time> &middot; 2 min read
+        </div>
+
+        <div>
+          Executor 框架帮助指定执行策略，但如果要使用 Executor，必须将任务表述为一个 Runnable。在大多数服务器应用程序中都存在一个明显的任务边界：单个客户请求。有时候，任务边界并非是显而易见的，在很多桌面应用程序中，在单个客户请求中任可能存在可发掘的并行性。本文以 HTML 页面绘制为例，进行详细说明。
+1. 串行的页面渲染器 最简单的方法就是对 HTML 文档进行串行处理。当遇到文本标签时，将其绘制到图像缓存中。当遇到图像引用时，先通过网络获取它，然后再将其绘制到图像缓存中。这种方式可能会用户感到烦恼，用户需要等待很长时间，直到现实所有文本。
+        </div>
+
+        <div class="read-more-link">
+          <a href="https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E5%8F%AF%E5%88%A9%E7%94%A8%E7%9A%84%E5%B9%B6%E8%A1%8C%E6%80%A7/">Read More</a>
+        </div>
+      </article>
+      <article class="post">
+        <h1 class="post-title">
+          <a href="https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-executor%E6%A1%86%E6%9E%B6/">Java并发编程-Executor框架</a>
         </h1>
 
         <div class="post-date">
@@ -229,65 +284,53 @@ public class SingleThreadWebServer { public static void main(String[] args) thro
           <a href="https://liam12138.github.io/post/spring-%E6%B3%A8%E8%A7%A3/">Read More</a>
         </div>
       </article>
-      <article class="post">
-        <h1 class="post-title">
-          <a href="https://liam12138.github.io/post/springaop/">Spring AOP</a>
-        </h1>
-
-        <div class="post-date">
-          <time datetime="2020-05-10T12:46:01&#43;0800">May 10, 2020</time> &middot; 2 min read
-        </div>
-
-        <div>
-          第一章、AOP编程 1、AOP概念 AOP(Aspect Oriented Programing) 面向切面编程 = Spring 动态代理开发 以切面为基本单位的程序开发，通过切面间的彼此协同，完成程序的构建 切面 = 切入点 + 额外功能 OOP(Object Oriented Programing) 面向对象编程 Java 以对象为基本单位的程序开发，通过对象的彼此协同，相互调用，完成程序的构建 POP(Producer Oriented Programing) 面向过程编程 C 以过程为基本单位的程序开发 AOP概念： 本质就是 Spring 的动态代理开发，通过代理类为原始类增加额外功能。 好处：利于原始类的维护 注意：AOP编程不可能取代OOP，OOP编程有意补充。 2、AOP编程的开发步骤 原始对象额外功能（MethodInterceptor）切入点组装切面（额外功能 + 切入点）3、切面的名词解释 第二章、AOP的底层原理 1、核心问题 1、AOP如何创建动态代理类（动态字节码技术）2、Spring工厂如何加工创建代理对象通过原始对象的id值，获得的是代理对象2、动态代理类的创建 2.
-        </div>
-
-        <div class="read-more-link">
-          <a href="https://liam12138.github.io/post/springaop/">Read More</a>
-        </div>
-      </article>
-      <article class="post">
-        <h1 class="post-title">
-          <a href="https://liam12138.github.io/post/bigdata1/">大数据相关知识点</a>
-        </h1>
-
-        <div class="post-date">
-          <time datetime="2020-04-20T18:46:01&#43;0800">Apr 20, 2020</time> &middot; 5 min read
-        </div>
-
-        <div>
-          1、HDFS HDFS概念 HDFS 是一个分布式的文件系统，由很多服务器联合起来实现其功能。
-优点
-高容错性、适合处理大量的数据、可以构建在廉价的机器上。
-缺点
-不适合低延时访问、无法对大量 的小文件进行存储、不支持并发写和修改。
-组成架构
-        </div>
-
-        <div class="read-more-link">
-          <a href="https://liam12138.github.io/post/bigdata1/">Read More</a>
-        </div>
-      </article>
-      <article class="post">
-        <h1 class="post-title">
-          <a href="https://liam12138.github.io/post/%E5%AE%89%E8%A3%85windows%E7%89%88rabbitmq%E5%A4%B1%E8%B4%A5%E6%80%BB%E7%BB%93/"></a>
-        </h1>
-
-        <div class="post-date">
-          <time datetime="0001-01-01T00:00:00Z">Jan 1, 0001</time> &middot; 1 min read
-        </div>
-
-        <div>
-          安装Windows版RabbitMQ失败总结 这几天在学习RabbitMQ，由于实习公司要求安装Windows版本的，试了一下安装Windows版本的RabbitMQ。经过一天的折腾可总算把RabbitMQ给安装好了。 1. 错误界面 每次输入 rabbitmqctl status 或者 rabbitmqctl 的其他指令时，都会出现类似于下面的错误 上述显示的错误主要有三个点： 1.
-        </div>
-
-        <div class="read-more-link">
-          <a href="https://liam12138.github.io/post/%E5%AE%89%E8%A3%85windows%E7%89%88rabbitmq%E5%A4%B1%E8%B4%A5%E6%80%BB%E7%BB%93/">Read More</a>
-        </div>
-      </article>
   </div>
 
   
+
+<ul class="pagination">
+    
+    <li class="page-item">
+        <a href="/" class="page-link" aria-label="First"><span aria-hidden="true">&laquo;&laquo;</span></a>
+    </li>
+    
+    <li class="page-item disabled">
+    <a  class="page-link" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+    </li>
+    
+    
+    
+    
+    
+    
+    
+        
+        
+    
+    
+    <li class="page-item active"><a class="page-link" href="/">1</a></li>
+    
+    
+    
+    
+    
+    
+        
+        
+    
+    
+    <li class="page-item"><a class="page-link" href="/page/2/">2</a></li>
+    
+    
+    <li class="page-item">
+    <a href="/page/2/" class="page-link" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+    </li>
+    
+    <li class="page-item">
+        <a href="/page/2/" class="page-link" aria-label="Last"><span aria-hidden="true">&raquo;&raquo;</span></a>
+    </li>
+    
+</ul>
 
 
   </main>
