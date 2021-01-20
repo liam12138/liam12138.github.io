@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.69.2" />
+
+  <title>Java并发编程 线程封闭 &middot; liam</title>
+
+  <meta name="description" content="" />
+
+  
+
+<meta itemprop="name" content="Java并发编程 线程封闭">
+<meta itemprop="description" content="线程封闭 当访问共享的可变数据时，通常需要使用同步。一种避免使用同步的方式就是不共享数据。如果仅在单线程内访问数据，就不需要同步。这种技术就是线程同步，它是实现线程安全性的最简单方式之一。当某个对象封闭在一个线程中，这种用法将自动实现线程安全性，即使被封闭的对象本身不是线程安全的。
+线程封闭技术的一种常见应用是 JDBC 的 Connection 对象。JDBC 规范并不要求 Connection 对象必须是线程安全的。线程从线程池中获取一个 Connection 对象，并且用该对象处理请求，使用完后再将对象返回给连接池由于大多数请求都是由单个线程采用同步的方式来处理，并且在 Connection 对象返回之前，连接池不会再将他分配给其他线程，因此，这种连接管理模式在处理请求时隐含地将 Connection 对象封闭在线程中。">
+<meta itemprop="datePublished" content="2021-01-20T21:59:51&#43;08:00" />
+<meta itemprop="dateModified" content="2021-01-20T21:59:51&#43;08:00" />
+<meta itemprop="wordCount" content="187">
+
+
+
+<meta itemprop="keywords" content="" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Java并发编程 线程封闭"/>
+<meta name="twitter:description" content="线程封闭 当访问共享的可变数据时，通常需要使用同步。一种避免使用同步的方式就是不共享数据。如果仅在单线程内访问数据，就不需要同步。这种技术就是线程同步，它是实现线程安全性的最简单方式之一。当某个对象封闭在一个线程中，这种用法将自动实现线程安全性，即使被封闭的对象本身不是线程安全的。
+线程封闭技术的一种常见应用是 JDBC 的 Connection 对象。JDBC 规范并不要求 Connection 对象必须是线程安全的。线程从线程池中获取一个 Connection 对象，并且用该对象处理请求，使用完后再将对象返回给连接池由于大多数请求都是由单个线程采用同步的方式来处理，并且在 Connection 对象返回之前，连接池不会再将他分配给其他线程，因此，这种连接管理模式在处理请求时隐含地将 Connection 对象封闭在线程中。"/>
+
+
+<meta property="og:title" content="Java并发编程 线程封闭" />
+<meta property="og:description" content="线程封闭 当访问共享的可变数据时，通常需要使用同步。一种避免使用同步的方式就是不共享数据。如果仅在单线程内访问数据，就不需要同步。这种技术就是线程同步，它是实现线程安全性的最简单方式之一。当某个对象封闭在一个线程中，这种用法将自动实现线程安全性，即使被封闭的对象本身不是线程安全的。
+线程封闭技术的一种常见应用是 JDBC 的 Connection 对象。JDBC 规范并不要求 Connection 对象必须是线程安全的。线程从线程池中获取一个 Connection 对象，并且用该对象处理请求，使用完后再将对象返回给连接池由于大多数请求都是由单个线程采用同步的方式来处理，并且在 Connection 对象返回之前，连接池不会再将他分配给其他线程，因此，这种连接管理模式在处理请求时隐含地将 Connection 对象封闭在线程中。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E5%B0%81%E9%97%AD/" />
+<meta property="article:published_time" content="2021-01-20T21:59:51+08:00" />
+<meta property="article:modified_time" content="2021-01-20T21:59:51+08:00" />
+
+
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/print.css"
+        media="print">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/poole.css">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/hyde.css">
+
+  
+
+
+  <link type="text/css" rel="stylesheet" href="/css/blog.css">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous" />
+
+  <link rel="apple-touch-icon-precomposed"
+        sizes="144x144"
+        href="/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  </head>
+<body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      
+        
+        <div class="author-image">
+          <img src="/images/head.jpg" class="img-circle img-headshot center" alt="Profile Picture">
+        </div>
+        
+      
+
+      <h1>liam</h1>
+
+      
+      <p class="lead">My Blog</p>
+      
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="https://liam12138.github.io/">Home</a>
+        </li>
+        <li>
+          <a href="/post/">Posts</a>
+        </li><li>
+          <a href="/about/about-me">About</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="social-icons">
+      
+      <a href="https://github.com/liam12138" rel="me" title="GitHub" target="_blank">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      
+    </section>
+  </div>
+</aside>
+
+
+  <main class="content container">
+  <div class="post">
+  <h1>Java并发编程 线程封闭</h1>
+
+  <div class="post-date">
+    <time datetime="2021-01-20T21:59:51&#43;0800">Jan 20, 2021</time> &middot; 1 min read
+  </div>
+
+  <h2 id="线程封闭">线程封闭</h2>
+<p>当访问共享的可变数据时，通常需要使用同步。一种避免使用同步的方式就是不共享数据。如果仅在单线程内访问数据，就不需要同步。这种技术就是线程同步，它是实现线程安全性的最简单方式之一。当某个对象封闭在一个线程中，这种用法将自动实现线程安全性，即使被封闭的对象本身不是线程安全的。</p>
+<p>线程封闭技术的一种常见应用是 JDBC 的 Connection 对象。JDBC 规范并不要求 Connection 对象必须是线程安全的。线程从线程池中获取一个 Connection 对象，并且用该对象处理请求，使用完后再将对象返回给连接池由于大多数请求都是由单个线程采用同步的方式来处理，并且在 Connection 对象返回之前，连接池不会再将他分配给其他线程，因此，这种连接管理模式在处理请求时隐含地将 Connection 对象封闭在线程中。</p>
+<p>在 Java 语言中并没有强制规定某个变量必须由锁来保护，同样在 Java 语言中也无法强制将对象封闭在某个线程中。线程封闭是在程序设计中的一个考虑因素。</p>
+<h3 id="1-ad-hoc-线程封闭">1. Ad-hoc 线程封闭</h3>
+<p>Ad-hoc 是指：维护线程封闭的职责完全由程序实现来承担。Ad-hoc 线程封闭是非常脆弱的（没有任何一种语言特性，例如：修饰符或者局部变量）。</p>
+<p>在 volatile 变量上存在一种特殊的线程封闭。只要你能确保只有单个线程对共享的 volatile 变量执行写入操作，那么就可以安全地在这些共享的 volatile 变量上执行“读取-修改-写入”的操作。在这种情况下，相当于将修改操作封闭在单个线程中以防止发生竞态条件，并且 volatile 变量的可见性保证还确保了其他线程能看到最新的值。</p>
+<p>由于 Ad-hoc 线程封闭技术的脆弱性，因此在程序中尽量少用他。</p>
+<h3 id="2-栈封闭">2. 栈封闭</h3>
+<p>栈封闭是线程封闭的一种特例（只能通过局部变量才能访问对象）。正如封装能使得代码更容易维持不变性条件那样，同步变量也能使对象更易于封闭在线程中。局部变量的固有属性之一就是封闭在执行线程中。他们位于执行线程的栈中，其他线程无法访问这个栈。</p>
+<p>对于基本类型的局部变量，例如下面代码中的 numPairs，无论如何都不会破坏栈封闭性。由于任何方法都无法获得对基本类型的引用，因此 Java 语言的这种语义就确保了基本类型的局部变量始终封闭在线程内。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 基本类型的局部变量与应用变量的线程封闭性（演示代码，代码逻辑不重要！）
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">loadTheArk</span><span style="color:#f92672">(</span>Collection<span style="color:#f92672">&lt;</span>Animal<span style="color:#f92672">&gt;</span> candidates<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+	SortedSet<span style="color:#f92672">&lt;</span>Animal<span style="color:#f92672">&gt;</span> animals<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">int</span> numPairs <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    Animal candidate <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+    
+    <span style="color:#75715e">// animals 被封闭在方法中，不要使他们逸出
+</span><span style="color:#75715e"></span>    animals <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> TreeSet<span style="color:#f92672">&lt;</span>Animal<span style="color:#f92672">&gt;(</span><span style="color:#66d9ef">new</span> SpeciesGenderComparator<span style="color:#f92672">());</span>
+    animals<span style="color:#f92672">.</span><span style="color:#a6e22e">addAll</span><span style="color:#f92672">(</span>candidates<span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span>Animal a <span style="color:#f92672">:</span> animals<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>candidate <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> <span style="color:#f92672">!</span>candidate<span style="color:#f92672">.</span><span style="color:#a6e22e">isPotentialMate</span><span style="color:#f92672">(</span>a<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+            candidate <span style="color:#f92672">=</span> a<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            ark<span style="color:#f92672">.</span><span style="color:#a6e22e">load</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> AnimalPair<span style="color:#f92672">(</span>candidate<span style="color:#f92672">,</span> a<span style="color:#f92672">));</span>
+            <span style="color:#f92672">++</span>numPairs<span style="color:#f92672">;</span>
+            candidate <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">return</span> numPairs<span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>在维持对象引用的栈封闭性时，程序员需要多做一些工作以确保被引用的对象不会逸出。在上面代码中实例化一个 TreeSet 对象，并将指向该对象的一个引用保存到 animals 中。此时只有一个引用指向集合 animals，这个引用被封闭在局部变量中，因此也被封闭在执行线程中。</p>
+<p>如果在线程内部上下文中使用非线程安全对象，那么该对象任然是线程安全的。</p>
+<h3 id="3-threadlocal-类">3. ThreadLocal 类</h3>
+<p>维持线程封闭性的一种更规范方法是使用 ThreadLocal，这个类能使线程中的某个值与保存值的对象关联起来。ThreadLocal 提供了 get 与 set 等访问接口或方法，这些方法为每个使用该变量的线程都存有一份独立的副本，因此 get 总是返回由当前执行线程在调用 set 时设置的最新值。</p>
+<p>ThreadLocal 对象通常用于防止对可变的单实例变量（Singleton）或全局变量进行共享。例如，在单线程应用程序中可能会维持一个全局的数据库连接，并在程序启动时初始化这个连接对象，从而避免在调用每个方法时都要传递一个 Connection 对象。由于 JDBC 的连接对象不一定是线程安全的，因此，当多线程应用程序在没有协同的情况下使用全局变量时，就不是线程安全的。通过将 JDBC 的连接保存到 ThreadLocal 对象中，每个线程都会拥有属于自己的连接，如下面代码 ConnectionHolder 所示。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 使用 ThreadLoacl 来维持线程封闭性
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> ThreadLocal<span style="color:#f92672">&lt;</span>Connection<span style="color:#f92672">&gt;</span> connectionHolder <span style="color:#f92672">=</span> 
+    <span style="color:#66d9ef">new</span> ThreadLocal<span style="color:#f92672">&lt;</span>Connection<span style="color:#f92672">&gt;()</span> <span style="color:#f92672">{</span>
+    	<span style="color:#66d9ef">public</span> Connection <span style="color:#a6e22e">initalValue</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> DriverManager<span style="color:#f92672">.</span><span style="color:#a6e22e">getConnection</span><span style="color:#f92672">(</span>DB_URL<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+	<span style="color:#f92672">};</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Connection <span style="color:#a6e22e">getConnection</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> connectionHolder<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>当某个频繁执行的操作需要一个临时对象，例如一个缓冲区，而同时又希望避免在每次执行时都重新分配该临时对象，就可以使用这项技术。在 Java 5.0 之前，Integer.toString() 方法使用 ThreadLocal 对象来保存一个12字节大小的缓冲区，用于对结果进行格式化，而不是使用共享的静态缓冲区（这需要使用锁机制）或者在每次调用时都分配一个新的缓冲区。</p>
+<p>当某个线程初次调用 ThreadLocal.get 方法时，就会调用 initialValue 来获取初始值。从概念上看，你可以将ThreadLoca<!-- raw HTML omitted --> 视为包含了 Map&lt;Thread,T&gt; 对象，其中保存了特定于该线程的值，但 ThreadLocal 的实现并非如此。这些特定于线程的值保存在 Thread 对象中，当线程终止后，这些值会作为垃圾回收。</p>
+<p>开发人员经常滥用 ThreadLocal，例如将所有全局变量都作为 ThreadLocal 对象，或者作为一种“隐藏”方法参数的手段。ThreadLocal 变量类似于全局变量，它能降低代码的可重用性，并在类之间引入隐含的耦合性,因此在使用时要格外小心。</p>
+
+</div>
+
+
+  </main>
+
+  <footer>
+  <div>
+    &copy; liam 2021
+
+    &middot; <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>
+
+    
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"
+          integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0="
+          crossorigin="anonymous"></script>
+
+  <script src="/js/blog.js"></script>
+
+  
+</body>
+</html>

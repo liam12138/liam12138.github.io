@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.69.2" />
+
+  <title>Java并发编程 线程安全性 &middot; liam</title>
+
+  <meta name="description" content="" />
+
+  
+
+<meta itemprop="name" content="Java并发编程 线程安全性">
+<meta itemprop="description" content="“共享”意味着变量可以由多个线程同时访问，而“可变”则意味着变量的值在生命周期内可以发生变化。如何防止在数据上发生不受控的并发访问，是我们需要讨论的点。
+一个对象是否需要是线程安全的，取决于它是否被多个线程访问。这指的是在程序中访问对象的方式，而不是对象要实现的功能。要使得对象是线程安全的，需要采用同步机制来协同对对象可变状态的访问。如果无法实现协同，那么可能会导致数据破坏以及其他不该出现的结果。
+当多个线程访问某个状态变量并且其中有一个线程执行写入操作时，必须采用同步机制来协同这些线程对变量的访问。Java中的主要同步机制是关键字synchronized，它提供了一种独占的加锁方式，但“同步”这个术语还包括volatile 类型的变量，显式锁（Explicit Lock〉以及原子变量。
+如果当多个线程访问同一个可变的状态时没有使用合适的同步，那么程序就会出现错误。有三种方式可以修改这个问题 1. 不在线程之间共享该状态变量 2. 将状态变量修改为不可变的变量 3.">
+<meta itemprop="datePublished" content="2020-12-28T08:43:47&#43;08:00" />
+<meta itemprop="dateModified" content="2020-12-28T08:43:47&#43;08:00" />
+<meta itemprop="wordCount" content="452">
+
+
+
+<meta itemprop="keywords" content="" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Java并发编程 线程安全性"/>
+<meta name="twitter:description" content="“共享”意味着变量可以由多个线程同时访问，而“可变”则意味着变量的值在生命周期内可以发生变化。如何防止在数据上发生不受控的并发访问，是我们需要讨论的点。
+一个对象是否需要是线程安全的，取决于它是否被多个线程访问。这指的是在程序中访问对象的方式，而不是对象要实现的功能。要使得对象是线程安全的，需要采用同步机制来协同对对象可变状态的访问。如果无法实现协同，那么可能会导致数据破坏以及其他不该出现的结果。
+当多个线程访问某个状态变量并且其中有一个线程执行写入操作时，必须采用同步机制来协同这些线程对变量的访问。Java中的主要同步机制是关键字synchronized，它提供了一种独占的加锁方式，但“同步”这个术语还包括volatile 类型的变量，显式锁（Explicit Lock〉以及原子变量。
+如果当多个线程访问同一个可变的状态时没有使用合适的同步，那么程序就会出现错误。有三种方式可以修改这个问题 1. 不在线程之间共享该状态变量 2. 将状态变量修改为不可变的变量 3."/>
+
+
+<meta property="og:title" content="Java并发编程 线程安全性" />
+<meta property="og:description" content="“共享”意味着变量可以由多个线程同时访问，而“可变”则意味着变量的值在生命周期内可以发生变化。如何防止在数据上发生不受控的并发访问，是我们需要讨论的点。
+一个对象是否需要是线程安全的，取决于它是否被多个线程访问。这指的是在程序中访问对象的方式，而不是对象要实现的功能。要使得对象是线程安全的，需要采用同步机制来协同对对象可变状态的访问。如果无法实现协同，那么可能会导致数据破坏以及其他不该出现的结果。
+当多个线程访问某个状态变量并且其中有一个线程执行写入操作时，必须采用同步机制来协同这些线程对变量的访问。Java中的主要同步机制是关键字synchronized，它提供了一种独占的加锁方式，但“同步”这个术语还包括volatile 类型的变量，显式锁（Explicit Lock〉以及原子变量。
+如果当多个线程访问同一个可变的状态时没有使用合适的同步，那么程序就会出现错误。有三种方式可以修改这个问题 1. 不在线程之间共享该状态变量 2. 将状态变量修改为不可变的变量 3." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7/" />
+<meta property="article:published_time" content="2020-12-28T08:43:47+08:00" />
+<meta property="article:modified_time" content="2020-12-28T08:43:47+08:00" />
+
+
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/print.css"
+        media="print">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/poole.css">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/hyde.css">
+
+  
+
+
+  <link type="text/css" rel="stylesheet" href="/css/blog.css">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous" />
+
+  <link rel="apple-touch-icon-precomposed"
+        sizes="144x144"
+        href="/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  </head>
+<body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      
+        
+        <div class="author-image">
+          <img src="/images/head.jpg" class="img-circle img-headshot center" alt="Profile Picture">
+        </div>
+        
+      
+
+      <h1>liam</h1>
+
+      
+      <p class="lead">My Blog</p>
+      
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="https://liam12138.github.io/">Home</a>
+        </li>
+        <li>
+          <a href="/post/">Posts</a>
+        </li><li>
+          <a href="/about/about-me">About</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="social-icons">
+      
+      <a href="https://github.com/liam12138" rel="me" title="GitHub" target="_blank">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      
+    </section>
+  </div>
+</aside>
+
+
+  <main class="content container">
+  <div class="post">
+  <h1>Java并发编程 线程安全性</h1>
+
+  <div class="post-date">
+    <time datetime="2020-12-28T08:43:47&#43;0800">Dec 28, 2020</time> &middot; 3 min read
+  </div>
+
+  <p>“共享”意味着变量可以由多个线程同时访问，而“可变”则意味着变量的值在生命周期内可以发生变化。如何防止在数据上发生不受控的并发访问，是我们需要讨论的点。</p>
+<p>一个对象是否需要是线程安全的，取决于它是否被多个线程访问。这指的是在程序中访问对象的方式，而不是对象要实现的功能。要使得对象是线程安全的，需要采用同步机制来协同对对象可变状态的访问。如果无法实现协同，那么可能会导致数据破坏以及其他不该出现的结果。</p>
+<p>当多个线程访问某个状态变量并且其中有一个线程执行写入操作时，必须采用同步机制来协同这些线程对变量的访问。Java中的主要同步机制是关键字synchronized，它提供了一种独占的加锁方式，但“同步”这个术语还包括volatile 类型的变量，显式锁（Explicit Lock〉以及原子变量。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">如果当多个线程访问同一个可变的状态时没有使用合适的同步，那么程序就会出现错误。有三种方式可以修改这个问题
+<span style="color:#66d9ef">1.</span> 不在线程之间共享该状态变量
+<span style="color:#66d9ef">2.</span> 将状态变量修改为不可变的变量
+<span style="color:#66d9ef">3.</span> 在访问状态变量时使用同步
+</code></pre></div><h2 id="1-什么是线程安全性">1. 什么是线程安全性</h2>
+<p>当多个线程访问某个类时，这个类始终都能表现出正确的行为，那么就称这个类是线程安全的</p>
+<p>由于单线程程序也可以看成是一个多线程程序，如果某个类在单线程环境中都不是正确的，那么它肯定不会是线程安全的。如果正确地实现了某个对象，那么在任何操作中（包括调用对象的公有方法或者对其公有域进行读/写操作）都不会违背不变性条件或后验条件。在线程安全类的对象实例上执行的任何串行或并行操作都不会使对象处于无效状态。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">在线程安全类中封装了必要的同步机制，因此客户端无须进一步采取同步措施
+</code></pre></div><p>下面程序给出了一个简单的因数分解 Servlet。这个 Servlet 从请求中提取出数值，执行因数分解，然后封装到该 Servlet 的响应中。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 一个无状态的 Servlet
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">@ThreadSafe</span> <span style="color:#75715e">// 标识是一个线程安全的类
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">StatelessFactorizer</span> <span style="color:#66d9ef">implements</span> Servlet <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">service</span><span style="color:#f92672">(</span>ServletRequest req<span style="color:#f92672">,</span> ServletResponse resp<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		BigInteger i <span style="color:#f92672">=</span> extractFormRequest<span style="color:#f92672">(</span>req<span style="color:#f92672">);</span> <span style="color:#75715e">// 处理 req 请求，得到因数分解数据
+</span><span style="color:#75715e"></span>        BigInteger<span style="color:#f92672">[]</span> factors <span style="color:#f92672">=</span> factor<span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+        encodeIntoResponse<span style="color:#f92672">(</span>resp<span style="color:#f92672">,</span> factors<span style="color:#f92672">);</span> <span style="color:#75715e">// 响应，返回数据
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>与大多数 Servlet 相同，StatelessFactorizer 是无状态的：它既不包含任何域，也不包含任何对其他类中域的引用。计算过程中的临时状态仅存在于线程栈上的局部变量中，并且只能由正在执行的线程访问。访问StatelessFactorizer 的线程不会影响另一个访问同一个StatelessFactorizer的线程的计算结果，因为这两个线程并没有共享状态。由于线程访问无状态对象的行为并不会影响其他线程中操作的正确性，因此无状态对象是线程安全的。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">无状态对象一定是线程安全的
+</code></pre></div><h2 id="2-原子性">2. 原子性</h2>
+<p>当我们在无状态对象中增加一个状态时，我们希望增加一个“命中计数器”来统计所处理的请求数量，一种方法就是增加一个 long 类型的域，每次请求的时候就增加 1，代码如下。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 在没有同步的情况下，统计已处理请求数量的 Servlet
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">@NotThreadSafe</span> 	<span style="color:#75715e">// 标识是一个线程不安全的类
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UnsafeCountingFactorizer</span> <span style="color:#66d9ef">implements</span> Servlet <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">long</span> count <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">long</span> <span style="color:#a6e22e">getCount</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span><span style="color:#66d9ef">return</span> count<span style="color:#f92672">;}</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">service</span><span style="color:#f92672">(</span>ServletRequest req<span style="color:#f92672">,</span> ServletResponse resp<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        BigInteger i <span style="color:#f92672">=</span> extractFromRequest<span style="color:#f92672">(</span>req<span style="color:#f92672">);</span>
+        BigInteger<span style="color:#f92672">[]</span> factors <span style="color:#f92672">=</span> factor<span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+        <span style="color:#f92672">++</span>count<span style="color:#f92672">;</span>
+        encodeIntoResponse<span style="color:#f92672">(</span>resp<span style="color:#f92672">,</span> factors<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>UnsafeCountingFactorizer 并非线程安全的，尽管它在单线程环境中能正确运行，这个类很可能会丢失一些更新操作。虽然递增操作 ++count 是一种紧凑的语法，但这个操作并非原子的，因而它并不会作为一个不可分割的操作来执行。实际上，它包含了三个独立的操作：读取count 的值，将值加1，然后将计算结果写入count。这是一个“读取–修改一写入”的操作序列，并且其结果状态依赖于之前的状态。那么如果有多个线程同时操作这个 count，就有可能出现问题。</p>
+<p>我们可以使用 AtomicLong 来解决，代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 使用 AtomicLong 类型的变量来统计已处理请求的数量
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">@ThreadSafe</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CountingFactorizer</span> <span style="color:#66d9ef">implements</span> Servlet <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> AtomicLong count <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomicLong<span style="color:#f92672">(</span>0<span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">long</span> <span style="color:#a6e22e">getCount</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span><span style="color:#66d9ef">return</span> count<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();}</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">service</span><span style="color:#f92672">(</span>ServletRequest req<span style="color:#f92672">,</span> ServletResponse resp<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        BigInteger i <span style="color:#f92672">=</span> extractFromRequest<span style="color:#f92672">(</span>req<span style="color:#f92672">);</span>
+        BigInteger<span style="color:#f92672">[]</span> factors <span style="color:#f92672">=</span> factor<span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+        count<span style="color:#f92672">.</span><span style="color:#a6e22e">incrementAndGet</span><span style="color:#f92672">();</span>
+        encodeIntoResponse<span style="color:#f92672">(</span>resp<span style="color:#f92672">,</span> factors<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>在 java.util.concurrent.atomic 包中包含了一些原子变量类，用于实现在数值和对象引用上的原子状态转换。通过用 AtomicLong 来代替 long 类型的计数器，能够确保所有对计数器状态的访问操作都是原子的。由于 Servlet 的状态就是计数器的状态，并且计数器是线程安全的，因此这里的 Servlet 也是线程安全的。
+我们在因数分解的 Servlet 中增加了一个计数器，并通过使用线程安全类 AtomicLong 来管理计数器的状态，从而确保了代码的线程安全性。当在无状态的类中添加一个状态时，如果该状态完全由线程安全的对象来管理，那么这个类仍然是线程安全的。（关于 AtomicLong 的实现原理，可自行百度）</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">在实际情况中，应尽可能地使用现有的线程安全对象（如：AtomicLong）来管理类的状态。与非线程安全的对象相比，判断线程安全对象的可能状态以其状态转换情况要更加容易，从而也更加容易维护和验证线程安全性。
+</code></pre></div><h2 id="3-加锁机制">3. 加锁机制</h2>
+<p>当在 Servlet 中添加一个状态变量时，可以通过线程安全的对象来管理 Servlet 的状态以维护 Servlet 的线程安全性。但如果想在 Servlet 中添加更多的状态，该如何解决呢？</p>
+<p>假设我们希望提升 Servlet 的性能：将最近的计算结果缓存起来，当两个连续的请求对相同的数值进行因数分解时，可以直接使用上一次的计算结果，而无须重新计算。要实现该缓存策略，需要保存两个状态：最近执行因数分解的数值，以及分解结果。代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 该 Servlet 在没有足够原子性保证的情况下对其最近计算结果进行缓存
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">@NotThreadSafe</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UnsafeCachingFactorizer</span> <span style="color:#66d9ef">implements</span> Servlet <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> AtomicReference<span style="color:#f92672">&lt;</span>BigInteger<span style="color:#f92672">&gt;</span> lastNumber <span style="color:#f92672">=</span> 
+        <span style="color:#66d9ef">new</span> AtomicReference<span style="color:#f92672">&lt;</span>BigInteger<span style="color:#f92672">&gt;();</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> AtomicReference<span style="color:#f92672">&lt;</span>BigInteger<span style="color:#f92672">[]&gt;</span> lastFactors <span style="color:#f92672">=</span> 
+        <span style="color:#66d9ef">new</span> AtomicReference<span style="color:#f92672">&lt;</span>BigInteger<span style="color:#f92672">[]&gt;();</span>
+    
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">service</span><span style="color:#f92672">(</span>ServletRequest req<span style="color:#f92672">,</span> ServletResponse resp<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        BigInteger i <span style="color:#f92672">=</span> extractFromRequest<span style="color:#f92672">(</span>req<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>i<span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>lastNumber<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">()))</span> <span style="color:#f92672">{</span>
+            encodeIntoResponse<span style="color:#f92672">(</span>resp<span style="color:#f92672">,</span> lastFactors<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">());</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            BigInteger<span style="color:#f92672">[]</span> factors <span style="color:#f92672">=</span> factor<span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+            lastNumber<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+            lastFactors<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span>factors<span style="color:#f92672">);</span>
+            encodeIntoResponse<span style="color:#f92672">(</span>resp<span style="color:#f92672">,</span> factors<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>然而，这种方法并不正确，尽管这些原子引用本身都是线程安全的，但在 UnsafeCachingFactorizer 中存在着竞态条件（由于多线程的存在，正确的结果取决于运气），这可能产生错误的结果。</p>
+<p>在线程安全性的定义中要求，多个线程之间的操作无论采用何种执行时序或交替方式，都要保证不变性条件不被破坏。UnsafeCachingFactorizer 的不变性条件之一是：在lastFactors 中缓存的因数之积应该等于在 lastNumber 中缓存的数值。只有确保了这个不变性条件不被破坏，上面的 Servlet 才是正确的。当在不变性条件中涉及多个变量时，各个变量之间并不是彼此独立的，而是某个变量的值会对其他变量的值产生约束。因此，当更新某一个变量时，需要在同一个原子操作中对其他变量同时进行更新。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">要保持状态的一致性，就需要在单个原子操作中更新所有相关的状态变量
+</code></pre></div><p>Java 提供了一种内置锁来支持原子性：同步代码块（Synchronized Block），修改代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@ThreadSafe</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SynchronizedFactorizer</span> <span style="color:#66d9ef">implements</span> Servlet <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> BigInteger lastNumber<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> BigInteger<span style="color:#f92672">[]</span> lastFactors<span style="color:#f92672">;</span>
+    
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">synchronized</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">service</span><span style="color:#f92672">(</span>ServletRequest req<span style="color:#f92672">,</span> ServletResponse resp<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        BigInteger i <span style="color:#f92672">=</span> extractFromRequest<span style="color:#f92672">(</span>req<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>i<span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>lastNumber<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+            encodeIntoResponse<span style="color:#f92672">(</span>resp<span style="color:#f92672">,</span> lastFactors<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            BigInteger<span style="color:#f92672">[]</span> factors <span style="color:#f92672">=</span> factor<span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+            lastNumber <span style="color:#f92672">=</span> i<span style="color:#f92672">;</span>
+            lastFactors <span style="color:#f92672">=</span> factors<span style="color:#f92672">;</span>
+            encodeIntoResponse<span style="color:#f92672">(</span>resp<span style="color:#f92672">,</span> factors<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>这种同步机制使得要确保因数分解 Servlet 的线程安全性变得更简单。在上面程序中使用了关键字 synchronized 来修饰 service 方法，因此在同一时刻只有一个线程可以执行 service 方法。现在的 SynchronizedFactorizer 是线程安全的。然而，这种方法却过于极端，因为多个客户端无法同时使用因数分解 Servlet，服务的响应性非常低，这是一个性能问题。</p>
+<h2 id="4-活跃性与性能">4. 活跃性与性能</h2>
+<p>在 UnsafeCachingFactorizer 中，我们通过在因数分解 Servlet 中引入了缓存机制来提升性能。在缓存中需要使用共享状态，因此需要通过同步来维护状态的完整性。然而，如果使用 SynchronizedFactorizer 中的同步方式，那么代码的执行性能将比较差。SynchronizedFactorizer 中采用的同步策略是，通过 Servlet 对象的内置锁来保护每一个状态变量，该策略的实现方式也就是对整个service方法进行同步。虽然这种简单且粗粒度的方法能确保线程安全性，但付出的代价却很高。
+由于 service 是一个 synchronized 方法，因此每次只有一个线程可以执行。这就背离了 Serlvet 框架的初衷，即  Serlvet 需要能同时处理多个请求，这在负载过高的情况下将给用户带来糟糕的体验。如果 Servlet 在对某个大数值进行因数分解时需要很长的执行时间，那么其他的客户端必须一直等待，直到 Servlet 处理完当前的请求，才能开始另一个新的因数分解运算。如果在系统中有多个CPU系统，那么当负载很高时，仍然会有处理器处于空闲状态。即使一些执行时间很短的请求，比如访问缓存的值，仍然需要很长时间，因为这些请求都必须等待前一个请求执行完成。</p>
+<p>下面代码中的 CachedFactorizer 将 Servlet 的代码修改为使用两个独立的同步代码块，每个同步代码块都只包含一小段代码。其中一个同步代码块负责保护判断是否只需返回缓存结果的“先检查后执行”操作序列，另一个同步代码块则负责确保对缓存的数值和因数分解结果进行同步更新。此外，我们还重新引入了“命中计数器”，添加了一个“缓存命中”计数器，并在第一个同步代码块中更新这两个变量。由于这两个计数器也是共享可变状态的一部分，因此必须在所有访问它们的位置上都使用同步。位于同步代码块之外的代码将以独占方式来访问局部（位于栈上的）变量，这些变量不会在多个线程间共享，因此不需要同步。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@ThreadSafe</span>
+pubblic <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CachedFactorizer</span> <span style="color:#66d9ef">implements</span> Servlet <span style="color:#f92672">{</span>
+	<span style="color:#66d9ef">private</span> BigInteger lastNumber<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> BigInteger<span style="color:#f92672">[]</span> lastFactors<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">long</span> hits<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">long</span> cacheHits<span style="color:#f92672">;</span>
+    
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">synchronized</span> <span style="color:#66d9ef">long</span> <span style="color:#a6e22e">getHits</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span><span style="color:#66d9ef">return</span> hits<span style="color:#f92672">;}</span> <span style="color:#75715e">// 获取命中数
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">synchronized</span> <span style="color:#66d9ef">double</span> <span style="color:#a6e22e">getCacheHitRatio</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span> <span style="color:#75715e">// 获取命中率
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">double</span><span style="color:#f92672">)</span> cacheHits <span style="color:#f92672">/</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">double</span><span style="color:#f92672">)</span> hits<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">service</span><span style="color:#f92672">(</span>ServletRequest req<span style="color:#f92672">,</span> ServletResponse resp<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+		BigInteger i <span style="color:#f92672">=</span> extractFromRequest<span style="color:#f92672">(</span>req<span style="color:#f92672">);</span>
+        BigInteger<span style="color:#f92672">[]</span> factors <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+        sychronized <span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#f92672">++</span>hits<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>i<span style="color:#f92672">.</span><span style="color:#a6e22e">equals</span><span style="color:#f92672">(</span>lastNumber<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+                <span style="color:#f92672">++</span>cacheHits<span style="color:#f92672">;</span>
+                factors <span style="color:#f92672">=</span> lastFactors<span style="color:#f92672">.</span><span style="color:#a6e22e">clone</span><span style="color:#f92672">();</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>factors <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            factors <span style="color:#f92672">=</span> factor<span style="color:#f92672">(</span>i<span style="color:#f92672">);</span>
+            <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                lastNumber <span style="color:#f92672">=</span> i<span style="color:#f92672">;</span>
+                lastFactors <span style="color:#f92672">=</span> factors<span style="color:#f92672">.</span><span style="color:#a6e22e">clone</span><span style="color:#f92672">();</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+        encodeIntoResponse<span style="color:#f92672">(</span>resp<span style="color:#f92672">,</span> factors<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">通常，在简单性与性能之间存在着相互制约因素。当实现某个同步策略时，一定不要盲目地为了性能而牺牲简单性（这可能会破坏安全性）
+</code></pre></div><p>当使用锁时，你应该清楚代码块中实现的功能，以及在执行该代码块时是否需要很长的时间。无论是执行计算密集的操作，还是在执行某个可能阻塞的操作，如果持有锁的时间过长，那么都会带来活跃性或性能问题。</p>
+
+</div>
+
+
+  </main>
+
+  <footer>
+  <div>
+    &copy; liam 2021
+
+    &middot; <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>
+
+    
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"
+          integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0="
+          crossorigin="anonymous"></script>
+
+  <script src="/js/blog.js"></script>
+
+  
+</body>
+</html>

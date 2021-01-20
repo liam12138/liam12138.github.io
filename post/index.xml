@@ -6,10 +6,51 @@
     <description>Recent content in Posts on liam</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 14 Dec 2020 13:37:40 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 20 Jan 2021 21:59:51 +0800</lastBuildDate>
     
 	<atom:link href="https://liam12138.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Java并发编程 线程封闭</title>
+      <link>https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E5%B0%81%E9%97%AD/</link>
+      <pubDate>Wed, 20 Jan 2021 21:59:51 +0800</pubDate>
+      
+      <guid>https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E5%B0%81%E9%97%AD/</guid>
+      <description>线程封闭 当访问共享的可变数据时，通常需要使用同步。一种避免使用同步的方式就是不共享数据。如果仅在单线程内访问数据，就不需要同步。这种技术就是线程同步，它是实现线程安全性的最简单方式之一。当某个对象封闭在一个线程中，这种用法将自动实现线程安全性，即使被封闭的对象本身不是线程安全的。
+线程封闭技术的一种常见应用是 JDBC 的 Connection 对象。JDBC 规范并不要求 Connection 对象必须是线程安全的。线程从线程池中获取一个 Connection 对象，并且用该对象处理请求，使用完后再将对象返回给连接池由于大多数请求都是由单个线程采用同步的方式来处理，并且在 Connection 对象返回之前，连接池不会再将他分配给其他线程，因此，这种连接管理模式在处理请求时隐含地将 Connection 对象封闭在线程中。</description>
+    </item>
+    
+    <item>
+      <title>Java并发编程 对象的共享</title>
+      <link>https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%85%B1%E4%BA%AB/</link>
+      <pubDate>Mon, 04 Jan 2021 09:04:53 +0800</pubDate>
+      
+      <guid>https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%85%B1%E4%BA%AB/</guid>
+      <description>1. 可见性 可见性是一种复杂的属性。在单线程环境中，如果向某个变量先写入值，然后在没有其他写入操作的情况下读取这个变量，那么总能得到相同的值。然而，当读操作和写操作在不同的线程中执行时，情况却并非如此。通常，我们无法确保执行读操作的线程能适时地看到其他线程写入的值，有时甚至是根本不可能的事情。为了确保多个线程之间对内存写入操作的可见性，必须使用同步机制。
+下面代码说明了当多个线程在没有同步的情况下共享数据时出现的错误。在代码中，主线程和读线程都将访问共享变量 ready 和 number。主线程启动读线程,然后将 number 设为 42，并将 ready 设为 true。读线程一直循环直到发现ready的值变为 true，然后输出 number 的值。虽然 NoVisibility 看起来会输出42，但事实上很可能输出 0，或者根本无法终止。这是因为在代码中没有使用足够的同步机制，因此无法保证主线程写入的 ready 值和 number 值对于读线程来说是可见的。</description>
+    </item>
+    
+    <item>
+      <title>Java并发编程 线程安全性</title>
+      <link>https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7/</link>
+      <pubDate>Mon, 28 Dec 2020 08:43:47 +0800</pubDate>
+      
+      <guid>https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E6%80%A7/</guid>
+      <description>“共享”意味着变量可以由多个线程同时访问，而“可变”则意味着变量的值在生命周期内可以发生变化。如何防止在数据上发生不受控的并发访问，是我们需要讨论的点。
+一个对象是否需要是线程安全的，取决于它是否被多个线程访问。这指的是在程序中访问对象的方式，而不是对象要实现的功能。要使得对象是线程安全的，需要采用同步机制来协同对对象可变状态的访问。如果无法实现协同，那么可能会导致数据破坏以及其他不该出现的结果。
+当多个线程访问某个状态变量并且其中有一个线程执行写入操作时，必须采用同步机制来协同这些线程对变量的访问。Java中的主要同步机制是关键字synchronized，它提供了一种独占的加锁方式，但“同步”这个术语还包括volatile 类型的变量，显式锁（Explicit Lock〉以及原子变量。
+如果当多个线程访问同一个可变的状态时没有使用合适的同步，那么程序就会出现错误。有三种方式可以修改这个问题 1. 不在线程之间共享该状态变量 2. 将状态变量修改为不可变的变量 3.</description>
+    </item>
+    
+    <item>
+      <title>分布式计算模拟</title>
+      <link>https://liam12138.github.io/post/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97%E6%A8%A1%E6%8B%9F/</link>
+      <pubDate>Fri, 18 Dec 2020 13:46:41 +0800</pubDate>
+      
+      <guid>https://liam12138.github.io/post/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97%E6%A8%A1%E6%8B%9F/</guid>
+      <description>1. 概念 分布式计算是一种计算方法，和集中式计算是相对的。 随着计算技术的发展，有些应用需要非常巨大的计算能力才能完成，如果采用集中式计算，需要耗费相当长的时间来完成。 分布式计算将该应用分解成许多小的部分，分配给多台计算机进行处理。这样可以节约整体计算时间，大大提高计算效率。 2. 简单的分布式计算框架 想要实现分布式计算，首先我们至少需要两个进程，一个负责逻辑的准备和逻辑的准备，一个负责执行计算，如小图所示（我们以 JVM 进程为例）</description>
+    </item>
     
     <item>
       <title>Java并发编程-显式锁</title>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.69.2" />
+
+  <title>分布式计算模拟 &middot; liam</title>
+
+  <meta name="description" content="" />
+
+  
+
+<meta itemprop="name" content="分布式计算模拟">
+<meta itemprop="description" content="1. 概念 分布式计算是一种计算方法，和集中式计算是相对的。 随着计算技术的发展，有些应用需要非常巨大的计算能力才能完成，如果采用集中式计算，需要耗费相当长的时间来完成。 分布式计算将该应用分解成许多小的部分，分配给多台计算机进行处理。这样可以节约整体计算时间，大大提高计算效率。 2. 简单的分布式计算框架 想要实现分布式计算，首先我们至少需要两个进程，一个负责逻辑的准备和逻辑的准备，一个负责执行计算，如小图所示（我们以 JVM 进程为例）">
+<meta itemprop="datePublished" content="2020-12-18T13:46:41&#43;08:00" />
+<meta itemprop="dateModified" content="2020-12-18T13:46:41&#43;08:00" />
+<meta itemprop="wordCount" content="473">
+
+
+
+<meta itemprop="keywords" content="" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="分布式计算模拟"/>
+<meta name="twitter:description" content="1. 概念 分布式计算是一种计算方法，和集中式计算是相对的。 随着计算技术的发展，有些应用需要非常巨大的计算能力才能完成，如果采用集中式计算，需要耗费相当长的时间来完成。 分布式计算将该应用分解成许多小的部分，分配给多台计算机进行处理。这样可以节约整体计算时间，大大提高计算效率。 2. 简单的分布式计算框架 想要实现分布式计算，首先我们至少需要两个进程，一个负责逻辑的准备和逻辑的准备，一个负责执行计算，如小图所示（我们以 JVM 进程为例）"/>
+
+
+<meta property="og:title" content="分布式计算模拟" />
+<meta property="og:description" content="1. 概念 分布式计算是一种计算方法，和集中式计算是相对的。 随着计算技术的发展，有些应用需要非常巨大的计算能力才能完成，如果采用集中式计算，需要耗费相当长的时间来完成。 分布式计算将该应用分解成许多小的部分，分配给多台计算机进行处理。这样可以节约整体计算时间，大大提高计算效率。 2. 简单的分布式计算框架 想要实现分布式计算，首先我们至少需要两个进程，一个负责逻辑的准备和逻辑的准备，一个负责执行计算，如小图所示（我们以 JVM 进程为例）" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liam12138.github.io/post/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A1%E7%AE%97%E6%A8%A1%E6%8B%9F/" />
+<meta property="article:published_time" content="2020-12-18T13:46:41+08:00" />
+<meta property="article:modified_time" content="2020-12-18T13:46:41+08:00" />
+
+
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/print.css"
+        media="print">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/poole.css">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/hyde.css">
+
+  
+
+
+  <link type="text/css" rel="stylesheet" href="/css/blog.css">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous" />
+
+  <link rel="apple-touch-icon-precomposed"
+        sizes="144x144"
+        href="/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  </head>
+<body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      
+        
+        <div class="author-image">
+          <img src="/images/head.jpg" class="img-circle img-headshot center" alt="Profile Picture">
+        </div>
+        
+      
+
+      <h1>liam</h1>
+
+      
+      <p class="lead">My Blog</p>
+      
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="https://liam12138.github.io/">Home</a>
+        </li>
+        <li>
+          <a href="/post/">Posts</a>
+        </li><li>
+          <a href="/about/about-me">About</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="social-icons">
+      
+      <a href="https://github.com/liam12138" rel="me" title="GitHub" target="_blank">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      
+    </section>
+  </div>
+</aside>
+
+
+  <main class="content container">
+  <div class="post">
+  <h1>分布式计算模拟</h1>
+
+  <div class="post-date">
+    <time datetime="2020-12-18T13:46:41&#43;0800">Dec 18, 2020</time> &middot; 3 min read
+  </div>
+
+  <h2 id="1-概念">1. 概念</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">分布式计算是一种计算方法，和集中式计算是相对的。
+随着计算技术的发展，有些应用需要非常巨大的计算能力才能完成，如果采用集中式计算，需要耗费相当长的时间来完成。
+分布式计算将该应用分解成许多小的部分，分配给多台计算机进行处理。这样可以节约整体计算时间，大大提高计算效率。
+</code></pre></div><h2 id="2-简单的分布式计算框架">2. 简单的分布式计算框架</h2>
+<p>想要实现分布式计算，首先我们至少需要两个进程，一个负责逻辑的准备和逻辑的准备，一个负责执行计算，如小图所示（我们以 JVM 进程为例）</p>
+<p><img src="../images/image-20201218135731595.png" alt="image-20201218135731595"></p>
+<p>这样的计算架构其实就和 client/server 这种架构设计类似，我们可以使用 socket 编程达到效果。</p>
+<p>由此我们就可以很容易的写出分布式的架子：</p>
+<p>Driver：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-scala" data-lang="scala"><span style="color:#66d9ef">object</span> <span style="color:#a6e22e">Driver</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">def</span> main<span style="color:#f92672">(</span>args<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Array</span><span style="color:#f92672">[</span><span style="color:#66d9ef">String</span><span style="color:#f92672">])</span><span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Unit</span> <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">val</span> client <span style="color:#66d9ef">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Socket</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;localhost&#34;</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">9999</span><span style="color:#f92672">)</span>
+
+        <span style="color:#66d9ef">val</span> out<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">OutputStream</span> <span style="color:#f92672">=</span> client1<span style="color:#f92672">.</span>getOutputStream
+
+        out<span style="color:#f92672">.</span>write<span style="color:#f92672">(</span><span style="color:#ae81ff">2</span><span style="color:#f92672">)</span>
+        out<span style="color:#f92672">.</span>flush<span style="color:#f92672">()</span>
+        println<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;发送数据成功&#34;</span><span style="color:#f92672">)</span>
+
+        out<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        client<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Executor:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-scala" data-lang="scala"><span style="color:#66d9ef">object</span> <span style="color:#a6e22e">Executor</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">def</span> main<span style="color:#f92672">(</span>args<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Array</span><span style="color:#f92672">[</span><span style="color:#66d9ef">String</span><span style="color:#f92672">])</span><span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Unit</span> <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">val</span> server <span style="color:#66d9ef">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ServerSocket</span><span style="color:#f92672">(</span><span style="color:#ae81ff">9999</span><span style="color:#f92672">)</span>
+
+        println<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;服务器启动，等待接收数据&#34;</span><span style="color:#f92672">)</span>
+
+        <span style="color:#66d9ef">val</span> client<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Socket</span> <span style="color:#f92672">=</span> server<span style="color:#f92672">.</span>accept<span style="color:#f92672">()</span>
+        <span style="color:#66d9ef">val</span> in<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">InputStream</span> <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span>getInputStream
+        <span style="color:#66d9ef">val</span> i<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Int</span> <span style="color:#f92672">=</span> in<span style="color:#f92672">.</span>read<span style="color:#f92672">()</span>
+
+        println<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;接收到客户端发送的数据：&#34;</span> <span style="color:#f92672">+</span> i<span style="color:#f92672">)</span>
+
+        in<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        client<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        server<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>运行结果：</p>
+<p><img src="../images/image-20201218142254599.png" alt="image-20201218142254599"></p>
+<p><img src="../images/image-20201218142305372.png" alt="image-20201218142305372"></p>
+<h2 id="3-带有计算任务的分布式计算框架">3. 带有计算任务的分布式计算框架</h2>
+<p>在 Driver 向 Executor 发送数据的同时，我们也可以将对应的计算任务发送过去，Task 就是一个简单的任务</p>
+<p>Task：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-scala" data-lang="scala"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 在网络中发送就必须实现序列化
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Task</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">Serializable</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// 数据
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">val</span> datas <span style="color:#66d9ef">=</span> <span style="color:#a6e22e">List</span><span style="color:#f92672">(</span><span style="color:#ae81ff">1</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">3</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">4</span><span style="color:#f92672">)</span>
+
+    <span style="color:#75715e">// 计算逻辑
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">val</span> logic <span style="color:#66d9ef">:</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">Int</span><span style="color:#f92672">)=&gt;</span> <span style="color:#a6e22e">Int</span> <span style="color:#66d9ef">=</span> <span style="color:#66d9ef">_</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>
+
+    <span style="color:#75715e">// 计算
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">def</span> compute<span style="color:#f92672">()</span> <span style="color:#66d9ef">:</span> <span style="color:#66d9ef">List</span><span style="color:#f92672">[</span><span style="color:#66d9ef">Int</span><span style="color:#f92672">]</span> <span style="color:#66d9ef">=</span> <span style="color:#f92672">{</span>
+        datas<span style="color:#f92672">.</span>map<span style="color:#f92672">(</span>logic<span style="color:#f92672">)</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Driver：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-scala" data-lang="scala"><span style="color:#66d9ef">object</span> <span style="color:#a6e22e">Driver</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">def</span> main<span style="color:#f92672">(</span>args<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Array</span><span style="color:#f92672">[</span><span style="color:#66d9ef">String</span><span style="color:#f92672">])</span><span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Unit</span> <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">val</span> client <span style="color:#66d9ef">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Socket</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;localhost&#34;</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">9999</span><span style="color:#f92672">)</span>
+
+        <span style="color:#66d9ef">val</span> out<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">OutputStream</span> <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span>getOutputStream
+
+        <span style="color:#66d9ef">val</span> outObj <span style="color:#66d9ef">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ObjectOutputStream</span><span style="color:#f92672">(</span>out<span style="color:#f92672">)</span>
+
+        <span style="color:#66d9ef">val</span> task <span style="color:#66d9ef">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Task</span>
+        outObj<span style="color:#f92672">.</span>writeObject<span style="color:#f92672">(</span>task<span style="color:#f92672">)</span>
+        outObj<span style="color:#f92672">.</span>flush<span style="color:#f92672">()</span>
+        outObj<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        client<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Executor：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-scala" data-lang="scala"><span style="color:#66d9ef">object</span> <span style="color:#a6e22e">Executor</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">def</span> main<span style="color:#f92672">(</span>args<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Array</span><span style="color:#f92672">[</span><span style="color:#66d9ef">String</span><span style="color:#f92672">])</span><span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Unit</span> <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">val</span> server <span style="color:#66d9ef">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ServerSocket</span><span style="color:#f92672">(</span><span style="color:#ae81ff">9999</span><span style="color:#f92672">)</span>
+
+        println<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;服务器启动，等待接收数据&#34;</span><span style="color:#f92672">)</span>
+
+        <span style="color:#66d9ef">val</span> client<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Socket</span> <span style="color:#f92672">=</span> server<span style="color:#f92672">.</span>accept<span style="color:#f92672">()</span>
+        <span style="color:#66d9ef">val</span> in<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">InputStream</span> <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span>getInputStream
+        <span style="color:#66d9ef">val</span> inObj <span style="color:#66d9ef">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ObjectInputStream</span><span style="color:#f92672">(</span>in<span style="color:#f92672">)</span>
+        <span style="color:#66d9ef">val</span> task<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Task</span> <span style="color:#f92672">=</span> inObj<span style="color:#f92672">.</span>readObject<span style="color:#f92672">().</span>asInstanceOf<span style="color:#f92672">[</span><span style="color:#66d9ef">Task</span><span style="color:#f92672">]</span>
+
+        <span style="color:#66d9ef">val</span> list<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">List</span><span style="color:#f92672">[</span><span style="color:#66d9ef">Int</span><span style="color:#f92672">]</span> <span style="color:#66d9ef">=</span> task<span style="color:#f92672">.</span>compute<span style="color:#f92672">()</span>
+        println<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;计算结果为：&#34;</span> <span style="color:#f92672">+</span> list<span style="color:#f92672">)</span>
+
+        inObj<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        in<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        client<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        server<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>运行结果：</p>
+<p><img src="../images/image-20201221142232372.png" alt="image-20201221142232372"></p>
+<p><img src="../images/image-20201221142244774.png" alt="image-20201221142244774"></p>
+<h2 id="4-多-executor-的分布式计算框架">4. 多 Executor 的分布式计算框架</h2>
+<p>在实际生产环境中的数据量往往是庞大的，如果此时我们只用一个 Executor 来处理如此多的数据，可能会导致响应时间变慢，这个时候我们可以使用多个 Executor 来处理数据，因此就有了如下的模型</p>
+<p><img src="../images/image-20201221143356579.png" alt="image-20201221143356579"></p>
+<p>在计算过程中，我们需要将数据拆分，因此可以使用 SubTask 作为子任务存储数据和计算逻辑</p>
+<p>Task：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-scala" data-lang="scala"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Task</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">Serializable</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// 数据
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">val</span> datas <span style="color:#66d9ef">=</span> <span style="color:#a6e22e">List</span><span style="color:#f92672">(</span><span style="color:#ae81ff">1</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">3</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">4</span><span style="color:#f92672">)</span>
+
+    <span style="color:#75715e">// 计算逻辑
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">val</span> logic <span style="color:#66d9ef">:</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">Int</span><span style="color:#f92672">)=&gt;</span> <span style="color:#a6e22e">Int</span> <span style="color:#66d9ef">=</span> <span style="color:#66d9ef">_</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>SubTask：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-scala" data-lang="scala"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SubTask</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">Serializable</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">var</span> datas<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">List</span><span style="color:#f92672">[</span><span style="color:#66d9ef">Int</span><span style="color:#f92672">]</span> <span style="color:#66d9ef">=</span> <span style="color:#66d9ef">_</span>
+    <span style="color:#66d9ef">var</span> logic<span style="color:#66d9ef">:</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">Int</span><span style="color:#f92672">)=&gt;</span><span style="color:#a6e22e">Int</span> <span style="color:#66d9ef">=</span>  <span style="color:#66d9ef">_</span>
+
+    <span style="color:#66d9ef">def</span> compute<span style="color:#f92672">()</span> <span style="color:#66d9ef">=</span> <span style="color:#f92672">{</span>
+        datas<span style="color:#f92672">.</span>map<span style="color:#f92672">(</span>logic<span style="color:#f92672">)</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Driver：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-scala" data-lang="scala"><span style="color:#66d9ef">object</span> <span style="color:#a6e22e">Driver</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">def</span> main<span style="color:#f92672">(</span>args<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Array</span><span style="color:#f92672">[</span><span style="color:#66d9ef">String</span><span style="color:#f92672">])</span><span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Unit</span> <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">val</span> client1 <span style="color:#66d9ef">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Socket</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;localhost&#34;</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">9999</span><span style="color:#f92672">)</span>
+        <span style="color:#66d9ef">val</span> client2<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Socket</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Socket</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;localhost&#34;</span><span style="color:#f92672">,</span> <span style="color:#ae81ff">8888</span><span style="color:#f92672">)</span>
+
+        <span style="color:#66d9ef">val</span> task <span style="color:#66d9ef">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Task</span>
+
+        <span style="color:#66d9ef">val</span> subTask1<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">SubTask</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">SubTask</span><span style="color:#f92672">()</span>
+        subTask1<span style="color:#f92672">.</span>datas <span style="color:#66d9ef">=</span> task<span style="color:#f92672">.</span>datas<span style="color:#f92672">.</span>take<span style="color:#f92672">(</span><span style="color:#ae81ff">2</span><span style="color:#f92672">)</span>
+        subTask1<span style="color:#f92672">.</span>logic <span style="color:#66d9ef">=</span> task<span style="color:#f92672">.</span>logic
+        <span style="color:#66d9ef">val</span> out1<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">OutputStream</span> <span style="color:#f92672">=</span> client1<span style="color:#f92672">.</span>getOutputStream
+        <span style="color:#66d9ef">val</span> outObj1<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">ObjectOutputStream</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ObjectOutputStream</span><span style="color:#f92672">(</span>out1<span style="color:#f92672">)</span>
+        outObj1<span style="color:#f92672">.</span>writeObject<span style="color:#f92672">(</span>subTask1<span style="color:#f92672">)</span>
+        outObj1<span style="color:#f92672">.</span>flush<span style="color:#f92672">()</span>
+        outObj1<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        out1<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        client1<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+
+        <span style="color:#66d9ef">val</span> subTask2<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">SubTask</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">SubTask</span><span style="color:#f92672">()</span>
+        subTask2<span style="color:#f92672">.</span>datas <span style="color:#66d9ef">=</span> task<span style="color:#f92672">.</span>datas<span style="color:#f92672">.</span>takeRight<span style="color:#f92672">(</span><span style="color:#ae81ff">2</span><span style="color:#f92672">)</span>
+        subTask2<span style="color:#f92672">.</span>logic <span style="color:#66d9ef">=</span> task<span style="color:#f92672">.</span>logic
+        <span style="color:#66d9ef">val</span> out2<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">OutputStream</span> <span style="color:#f92672">=</span> client2<span style="color:#f92672">.</span>getOutputStream
+        <span style="color:#66d9ef">val</span> outObj2<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">ObjectOutputStream</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ObjectOutputStream</span><span style="color:#f92672">(</span>out2<span style="color:#f92672">)</span>
+
+        outObj2<span style="color:#f92672">.</span>writeObject<span style="color:#f92672">(</span>subTask2<span style="color:#f92672">)</span>
+        outObj2<span style="color:#f92672">.</span>flush<span style="color:#f92672">()</span>
+        outObj2<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        out2<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        client2<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Executor1：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-scala" data-lang="scala"><span style="color:#66d9ef">object</span> <span style="color:#a6e22e">Executor</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">def</span> main<span style="color:#f92672">(</span>args<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Array</span><span style="color:#f92672">[</span><span style="color:#66d9ef">String</span><span style="color:#f92672">])</span><span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Unit</span> <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">val</span> server <span style="color:#66d9ef">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ServerSocket</span><span style="color:#f92672">(</span><span style="color:#ae81ff">9999</span><span style="color:#f92672">)</span>
+
+        println<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;服务器启动，等待接收数据&#34;</span><span style="color:#f92672">)</span>
+
+        <span style="color:#66d9ef">val</span> client<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Socket</span> <span style="color:#f92672">=</span> server<span style="color:#f92672">.</span>accept<span style="color:#f92672">()</span>
+        <span style="color:#66d9ef">val</span> in<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">InputStream</span> <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span>getInputStream
+        <span style="color:#66d9ef">val</span> inObj<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">ObjectInputStream</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ObjectInputStream</span><span style="color:#f92672">(</span>in<span style="color:#f92672">)</span>
+
+        <span style="color:#66d9ef">val</span> task<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">SubTask</span> <span style="color:#f92672">=</span> inObj<span style="color:#f92672">.</span>readObject<span style="color:#f92672">().</span>asInstanceOf<span style="color:#f92672">[</span><span style="color:#66d9ef">SubTask</span><span style="color:#f92672">]</span>
+        <span style="color:#66d9ef">val</span> result<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">List</span><span style="color:#f92672">[</span><span style="color:#66d9ef">Int</span><span style="color:#f92672">]</span> <span style="color:#66d9ef">=</span> task<span style="color:#f92672">.</span>compute<span style="color:#f92672">()</span>
+        println<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;接收客户端[9999]发送的数据：&#34;</span> <span style="color:#f92672">+</span> result<span style="color:#f92672">)</span>
+
+        inObj<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        in<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        client<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        server<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Executor2：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-scala" data-lang="scala"><span style="color:#66d9ef">object</span> <span style="color:#a6e22e">Executor2</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">def</span> main<span style="color:#f92672">(</span>args<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Array</span><span style="color:#f92672">[</span><span style="color:#66d9ef">String</span><span style="color:#f92672">])</span><span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Unit</span> <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">val</span> server <span style="color:#66d9ef">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ServerSocket</span><span style="color:#f92672">(</span><span style="color:#ae81ff">8888</span><span style="color:#f92672">)</span>
+
+        println<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;服务器启动，等待接收数据&#34;</span><span style="color:#f92672">)</span>
+
+        <span style="color:#66d9ef">val</span> client<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">Socket</span> <span style="color:#f92672">=</span> server<span style="color:#f92672">.</span>accept<span style="color:#f92672">()</span>
+        <span style="color:#66d9ef">val</span> in<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">InputStream</span> <span style="color:#f92672">=</span> client<span style="color:#f92672">.</span>getInputStream
+        <span style="color:#66d9ef">val</span> inObj<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">ObjectInputStream</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">ObjectInputStream</span><span style="color:#f92672">(</span>in<span style="color:#f92672">)</span>
+
+        <span style="color:#66d9ef">val</span> task<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">SubTask</span> <span style="color:#f92672">=</span> inObj<span style="color:#f92672">.</span>readObject<span style="color:#f92672">().</span>asInstanceOf<span style="color:#f92672">[</span><span style="color:#66d9ef">SubTask</span><span style="color:#f92672">]</span>
+        <span style="color:#66d9ef">val</span> result<span style="color:#66d9ef">:</span> <span style="color:#66d9ef">List</span><span style="color:#f92672">[</span><span style="color:#66d9ef">Int</span><span style="color:#f92672">]</span> <span style="color:#66d9ef">=</span> task<span style="color:#f92672">.</span>compute<span style="color:#f92672">()</span>
+        println<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;接收客户端[8888]发送的数据：&#34;</span> <span style="color:#f92672">+</span> result<span style="color:#f92672">)</span>
+
+        inObj<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        in<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        client<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+        server<span style="color:#f92672">.</span>close<span style="color:#f92672">()</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>运行结果：</p>
+<p><img src="../images/image-20201221144842286.png" alt="image-20201221144842286"></p>
+<p><img src="../images/image-20201221144852534.png" alt="image-20201221144852534"></p>
+<p><img src="../images/image-20201221144900584.png" alt="image-20201221144900584"></p>
+<p><strong>以上就是我对分布式计算的简单模拟，希望这篇文章能够加深你对分布式计算的理解</strong></p>
+
+</div>
+
+
+  </main>
+
+  <footer>
+  <div>
+    &copy; liam 2021
+
+    &middot; <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>
+
+    
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"
+          integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0="
+          crossorigin="anonymous"></script>
+
+  <script src="/js/blog.js"></script>
+
+  
+</body>
+</html>

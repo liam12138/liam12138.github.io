@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="generator" content="Hugo 0.69.2" />
+
+  <title>Java并发编程 对象的共享 &middot; liam</title>
+
+  <meta name="description" content="" />
+
+  
+
+<meta itemprop="name" content="Java并发编程 对象的共享">
+<meta itemprop="description" content="1. 可见性 可见性是一种复杂的属性。在单线程环境中，如果向某个变量先写入值，然后在没有其他写入操作的情况下读取这个变量，那么总能得到相同的值。然而，当读操作和写操作在不同的线程中执行时，情况却并非如此。通常，我们无法确保执行读操作的线程能适时地看到其他线程写入的值，有时甚至是根本不可能的事情。为了确保多个线程之间对内存写入操作的可见性，必须使用同步机制。
+下面代码说明了当多个线程在没有同步的情况下共享数据时出现的错误。在代码中，主线程和读线程都将访问共享变量 ready 和 number。主线程启动读线程,然后将 number 设为 42，并将 ready 设为 true。读线程一直循环直到发现ready的值变为 true，然后输出 number 的值。虽然 NoVisibility 看起来会输出42，但事实上很可能输出 0，或者根本无法终止。这是因为在代码中没有使用足够的同步机制，因此无法保证主线程写入的 ready 值和 number 值对于读线程来说是可见的。">
+<meta itemprop="datePublished" content="2021-01-04T09:04:53&#43;08:00" />
+<meta itemprop="dateModified" content="2021-01-04T09:04:53&#43;08:00" />
+<meta itemprop="wordCount" content="327">
+
+
+
+<meta itemprop="keywords" content="" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Java并发编程 对象的共享"/>
+<meta name="twitter:description" content="1. 可见性 可见性是一种复杂的属性。在单线程环境中，如果向某个变量先写入值，然后在没有其他写入操作的情况下读取这个变量，那么总能得到相同的值。然而，当读操作和写操作在不同的线程中执行时，情况却并非如此。通常，我们无法确保执行读操作的线程能适时地看到其他线程写入的值，有时甚至是根本不可能的事情。为了确保多个线程之间对内存写入操作的可见性，必须使用同步机制。
+下面代码说明了当多个线程在没有同步的情况下共享数据时出现的错误。在代码中，主线程和读线程都将访问共享变量 ready 和 number。主线程启动读线程,然后将 number 设为 42，并将 ready 设为 true。读线程一直循环直到发现ready的值变为 true，然后输出 number 的值。虽然 NoVisibility 看起来会输出42，但事实上很可能输出 0，或者根本无法终止。这是因为在代码中没有使用足够的同步机制，因此无法保证主线程写入的 ready 值和 number 值对于读线程来说是可见的。"/>
+
+
+<meta property="og:title" content="Java并发编程 对象的共享" />
+<meta property="og:description" content="1. 可见性 可见性是一种复杂的属性。在单线程环境中，如果向某个变量先写入值，然后在没有其他写入操作的情况下读取这个变量，那么总能得到相同的值。然而，当读操作和写操作在不同的线程中执行时，情况却并非如此。通常，我们无法确保执行读操作的线程能适时地看到其他线程写入的值，有时甚至是根本不可能的事情。为了确保多个线程之间对内存写入操作的可见性，必须使用同步机制。
+下面代码说明了当多个线程在没有同步的情况下共享数据时出现的错误。在代码中，主线程和读线程都将访问共享变量 ready 和 number。主线程启动读线程,然后将 number 设为 42，并将 ready 设为 true。读线程一直循环直到发现ready的值变为 true，然后输出 number 的值。虽然 NoVisibility 看起来会输出42，但事实上很可能输出 0，或者根本无法终止。这是因为在代码中没有使用足够的同步机制，因此无法保证主线程写入的 ready 值和 number 值对于读线程来说是可见的。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://liam12138.github.io/post/java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B-%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%85%B1%E4%BA%AB/" />
+<meta property="article:published_time" content="2021-01-04T09:04:53+08:00" />
+<meta property="article:modified_time" content="2021-01-04T09:04:53+08:00" />
+
+
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/print.css"
+        media="print">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/poole.css">
+
+  <link type="text/css"
+        rel="stylesheet"
+        href="/css/hyde.css">
+
+  
+
+
+  <link type="text/css" rel="stylesheet" href="/css/blog.css">
+
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk="
+        crossorigin="anonymous" />
+
+  <link rel="apple-touch-icon-precomposed"
+        sizes="144x144"
+        href="/apple-touch-icon-144-precomposed.png">
+
+  <link rel="shortcut icon" href="/favicon.png">
+
+  
+  </head>
+<body>
+  <aside class="sidebar">
+  <div class="container">
+    <div class="sidebar-about">
+      
+        
+        <div class="author-image">
+          <img src="/images/head.jpg" class="img-circle img-headshot center" alt="Profile Picture">
+        </div>
+        
+      
+
+      <h1>liam</h1>
+
+      
+      <p class="lead">My Blog</p>
+      
+    </div>
+
+    <nav>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="https://liam12138.github.io/">Home</a>
+        </li>
+        <li>
+          <a href="/post/">Posts</a>
+        </li><li>
+          <a href="/about/about-me">About</a>
+        </li>
+      </ul>
+    </nav>
+
+    <section class="social-icons">
+      
+      <a href="https://github.com/liam12138" rel="me" title="GitHub" target="_blank">
+        <i class="fab fa-github" aria-hidden="true"></i>
+      </a>
+      
+    </section>
+  </div>
+</aside>
+
+
+  <main class="content container">
+  <div class="post">
+  <h1>Java并发编程 对象的共享</h1>
+
+  <div class="post-date">
+    <time datetime="2021-01-04T09:04:53&#43;0800">Jan 4, 2021</time> &middot; 2 min read
+  </div>
+
+  <h2 id="1-可见性">1. 可见性</h2>
+<p>可见性是一种复杂的属性。在单线程环境中，如果向某个变量先写入值，然后在没有其他写入操作的情况下读取这个变量，那么总能得到相同的值。然而，当读操作和写操作在不同的线程中执行时，情况却并非如此。通常，我们无法确保执行读操作的线程能适时地看到其他线程写入的值，有时甚至是根本不可能的事情。为了确保多个线程之间对内存写入操作的可见性，必须使用同步机制。</p>
+<p>下面代码说明了当多个线程在没有同步的情况下共享数据时出现的错误。在代码中，主线程和读线程都将访问共享变量 ready 和 number。主线程启动读线程,然后将 number  设为 42，并将 ready 设为 true。读线程一直循环直到发现ready的值变为 true，然后输出 number 的值。虽然 NoVisibility 看起来会输出42，但事实上很可能输出 0，或者根本无法终止。这是因为在代码中没有使用足够的同步机制，因此无法保证主线程写入的 ready 值和 number 值对于读线程来说是可见的。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 在没有同步的情况下共享变量
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NoVisibility</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">boolean</span> ready<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> number<span style="color:#f92672">;</span>
+    
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ReaderThread</span> <span style="color:#66d9ef">extends</span> Threas <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">run</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">while</span> <span style="color:#f92672">(!</span>ready<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">yield</span><span style="color:#f92672">();</span>
+            <span style="color:#f92672">}</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>number<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+    
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">new</span> ReaderThread<span style="color:#f92672">().</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+        number <span style="color:#f92672">=</span> 42<span style="color:#f92672">;</span>
+        ready <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>NoVisibility 可能会持续循环下去，因为读线程可能永远都看不到 ready的 值。一种更奇怪的现象是，NoVisibility  可能会输出 0，因为读线程可能看到了写入 ready 的值，但却没有看到之后写入 number 的值，这种现象被称为“重排序(Reordering)”。只要在某个线程中无法检测到重排序情况（即使在其他线程中可以很明显地看到该线程中的重排序)，那么就无法确保线程中的操作将按照程序中指定的顺序来执行。当主线程首先写入 number，然后在没有同步的情况下写入ready，那么读线程看到的顺序可能与写人的顺序完全相反。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">在没有同步的情况下，编译器、处理器以及运行时等都可能对操作的执行顺序进行一些意想不到的调整。在缺乏足够同步的多线程程序中，想要对内存操作的执行顺序进行判断，几乎无法得出正确的结论
+</code></pre></div><p>==<strong>Volatile 变量</strong>==</p>
+<p>Java 语言提供了一种稍弱的同步机制，即 volatile 变量，用来确保将变量的更新操作通知到其他线程。当把变量声明为 volatile 类型后，编译器与运行时都会注意到这个变量是共享的，因此不会将该变量上的操作与其他内存操作一起重排序。volatile 变量不会被缓存在寄存器或者对其他处理器不可见的地方，因此在读取 volatile 类型的变量时总会返回最新写入的值。在访问 volatile 变量时不会执行加锁操作，因此也就不会使执行线程阻塞，因此volatile 变量是一种比 sychronized 关键字更轻量级的同步机制。</p>
+<p>volatile 变量对可见性的影响比 volatile 变量本身更为重要。当线程 A 首先写入一个 volatile 变量并且线程 B 随后读取该变量时，在写入 volatile 变量之前对 A 可见的所有变量的值，在 B 读取了 volatile 变量后，对B也是可见的。因此，从内存可见性的角度来看，写入 volatile 变量相当于退出同步代码块，而读取 volatile 变量就相当于进入同步代码块。然而，我们并不建议过度依赖 volatile 变量提供的可见性。如果在代码中依赖 volatile 变量来控制状态的可见性，通常比使用锁的代码更脆弱，也更难以理解。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">仅当 volatile 变量能简化代码的实现以及对同步策略的验证时，才应该使用他们。如果在验证正确性时需要对可见性进行复杂判断，那么就不要使用 volatile 变量。volatile 变量的正确使用方式包括：确保他们自身状态的可见性，确保它们所引用对象的状态的可见性，以及标识一些重要的程序生命周期事件的发生（初始化或关闭）。
+</code></pre></div><p>下面程序是 volatile 一种典型的用法：检查某状态标记判断是否退出循环。线程试图通过类似于数绵羊的传统方法进入休眠状态。asleep 必须是 volatile 变量。否则，当 asleep 被另外一个线程修改时，执行判断的线程却发现不了。我们也可以用锁，但这会使得代码更加复杂。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">boolean</span> asleep<span style="color:#f92672">;</span>
+<span style="color:#f92672">...</span>
+    <span style="color:#66d9ef">while</span> <span style="color:#f92672">(!</span>asleep<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        countSomeSheep<span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>虽然 volatile 变量很方便，但也存在一些局限性。volatile 变量通常用做某个操作完成、发生中断或者状态的标志。尽管 volatile 变量也可以用于表示其他的状态信息，但在使用时要非常小心。例如，volatile 的语义不足以确保递增操作(count++)的原子性，除非你能确保只有一个线程对变量执行写操作。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">加锁机制既可以确保可见性又可以确保原则性，而 volatile 变量只能确保可见性
+</code></pre></div><p>当且仅当满足以下所有条件时，才应该使用 volatile 变量：</p>
+<ul>
+<li>对变量的写入操作不依赖变量的当前值，或者你能确保只有单个线程更新变量的值</li>
+<li>该变量不会与其他状态变量一起纳入不变性条件中</li>
+<li>在访问变量时不需要加锁</li>
+</ul>
+<h2 id="2-发布与逸出">2. 发布与逸出</h2>
+<p>“发布(Publish)”一个对象的意思是指，使对象能够在当前作用域之外的代码中使用。例如，将一个指向该对象的引用保存到其他代码可以访问的地方，或者在某一个非私有的方法中返回该引用，或者将引用传递到其他类的方法中。在许多情况中，我们要确保对象及其内部状态不被发布。而在某些情况下，我们又需要发布某个对象，但如果在发布时要确保线程安全性，则可能需要同步。发布内部状态可能会破坏封装性，并使得程序难以维持不变性条件。例如，如果在对象构造完成之前就发布该对象，就会破坏线程安全性。当某个不应该发布的对象被发布时，这种情况就被称为逸出(Escape)。
+发布对象的最简单方法是将对象的引用保存到一个公有的静态变量中，以便任何类和线程都能看见该对象，如下面程序所示。在 initialize 方法中实例化一个新的 HashSet 对象，并将对象的引用保存到 knownSecrets 中以发布该对象。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 发布一个对象
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Set<span style="color:#f92672">&lt;</span>Secret<span style="color:#f92672">&gt;</span> knownSecrets<span style="color:#f92672">;</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">initialize</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    knownSecrets <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HashSet<span style="color:#f92672">&lt;</span>Secret<span style="color:#f92672">&gt;();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>当发布某个对象时，可能会间接地发布其他对象。如果将一个 Secret 对象添加到集合 knownSecrets 中，那么同样会发布这个对象，因为任何代码都可以遍历这个集合，并获得对这个新 Secret 对象的引用。同样，如果从非私有方法中返回一个引用，那么同样会发布返回的对象。下面程序中的 UnsafeStates 发布了本应为私有的状态数组。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 使内部的可变状态逸出（不要这么做）
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UnsafeStates</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> String<span style="color:#f92672">[]</span> states <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> String<span style="color:#f92672">[]</span> <span style="color:#f92672">{</span>
+        <span style="color:#e6db74">&#34;AK&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;AL&#34;</span> <span style="color:#f92672">...</span>
+    <span style="color:#f92672">};</span>
+    <span style="color:#66d9ef">public</span> String<span style="color:#f92672">[]</span> <span style="color:#a6e22e">getStates</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span> <span style="color:#66d9ef">return</span> states<span style="color:#f92672">;</span> <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>如果按照上述方式来发布 states，就会出现问题，因为任何调用者都能修改这个数组的内容。在这个示例中，数组 states 已经逸出了它所在的作用域，因为这个本应是私有的变量已经被发布了。</p>
+<p>当发布一个对象时，在该对象的非私有域中引用的所有对象同样会被发布。一般来说，如果一个已经发布的对象能够通过非私有的变量引用和方法调用到达其他的对象，那么这些对象也都会被发布。</p>
+<p>无论其他的线程会对已发布的引用执行何种操作，其实都不重要，因为误用该引用的风险始终存在。当某个对象逸出后，你必须假设有某个类或线程可能会误用该对象。这正是需要使用封装的最主要原因：封装能够使得对程序的正确性进行分析变得可能，并使得无意中破坏设计约束条件变得更难。</p>
+<p>最后一种发布对象或其内部状态的机制就是发布一个内部的类实例，如下面程序的 ThisEscape 所示。当ThisEscape 发布 EventListener 时，也隐含地发布了 ThisEscape 实例本身，因为在这个内部类的实例中包含了对ThisEscape 实例的隐含引用。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// 隐式地使用 this 引用逸出 （不要这么做）
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ThisEscape</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">ThisEscape</span><span style="color:#f92672">(</span>EventSource source<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        source<span style="color:#f92672">.</span><span style="color:#a6e22e">registerListener</span><span style="color:#f92672">(</span>
+        	<span style="color:#66d9ef">new</span> EventListener<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onEvent</span><span style="color:#f92672">(</span>Event e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    doSomething<span style="color:#f92672">(</span>e<span style="color:#f92672">);</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p><strong>安全的对象构造过程</strong></p>
+<p>在 ThisEscape 中给出了逸出的一个特殊示例，即 this 引用在构造函数中逸出。当内部的 EventListener 实例发布时，在外部封装的 ThisEscape 实例也逸出了。当且仅当对象的构造函数返回时，对象才处于可预测的和一致的状态。因此，当从对象的构造函数中发布对象时，只是发布了一个尚未构造完成的对象。即使发布对象的语句位于构造函数的最后一行也是如此。如果 this 引用在构造过程中逸出，那么这种对象就被认为是不正确构造。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">不要在构造过程中使 this 引用逸出
+</code></pre></div><p>如果想在构造函数中注册一个事件监听器或启动线程，那么可以使用一个私有的构造函数和一个公共的工厂方法(Factory Method)，从而避免不正确的构造过程。</p>
+<p>使用工厂方法来阻止 this 引用在构造过程中逸出</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SafeListener</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> EventListener listener<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#a6e22e">SafeListener</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        listener <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> EventListener<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">onEvent</span><span style="color:#f92672">(</span>Event e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                doSomething<span style="color:#f92672">(</span>e<span style="color:#f92672">);</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">};</span>
+    <span style="color:#f92672">}</span>
+    
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> SafeListener <span style="color:#a6e22e">newInstance</span><span style="color:#f92672">(</span>EventSource source<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        SafeListener safe <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SafeListener<span style="color:#f92672">();</span>
+        source<span style="color:#f92672">.</span><span style="color:#a6e22e">registerListener</span><span style="color:#f92672">(</span>safe<span style="color:#f92672">.</span><span style="color:#a6e22e">listener</span><span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">return</span> safe<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div>
+</div>
+
+
+  </main>
+
+  <footer>
+  <div>
+    &copy; liam 2021
+
+    &middot; <a href="https://creativecommons.org/licenses/by-sa/4.0" target="_blank">CC BY-SA 4.0</a>
+
+    
+  </div>
+</footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js"
+          integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0="
+          crossorigin="anonymous"></script>
+
+  <script src="/js/blog.js"></script>
+
+  
+</body>
+</html>
